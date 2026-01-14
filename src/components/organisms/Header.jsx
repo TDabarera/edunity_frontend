@@ -1,10 +1,11 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, Chip } from '@mui/material';
-import SchoolIcon from '@mui/icons-material/School'; // Run: npm install @mui/icons-material
+import SchoolIcon from '@mui/icons-material/School';
+import colors from '../../styles/colors';
 
 const Header = ({ isLoggedIn, user }) => {
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#1a237e' }}>
+    <AppBar position="static" sx={{ backgroundColor: colors.headerBg }}>
       <Toolbar>
         {/* Logo Placeholder */}
         <SchoolIcon sx={{ mr: 1 }} />
