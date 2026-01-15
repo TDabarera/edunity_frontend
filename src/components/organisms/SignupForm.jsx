@@ -103,19 +103,6 @@ const SignupForm = ({ onSubmit, error, loading }) => {
 
   return (
     <>
-      <Box
-        component="img"
-        src="Characters/SignUp.png"
-        alt="Avatar Signing Up"
-        sx={{
-          width: '300px',
-          maxWidth: '400px',
-          mb: 2,
-          justifyContent: 'center',
-          display: 'block',
-          mx: 'auto',
-        }}
-      />
       <Paper elevation={16} sx={{ p: 6 }}>
       <Typography variant="h6">Sign Up</Typography>
       <Box

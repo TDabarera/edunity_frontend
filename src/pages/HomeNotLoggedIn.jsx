@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
 import { Banner } from '../components/organisms';
-import { Button } from '../components/atoms';
 import colors from '../styles/colors';
 
 const HomeNotLoggedIn = () => {

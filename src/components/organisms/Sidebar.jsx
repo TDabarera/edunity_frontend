@@ -6,7 +6,7 @@ import {
 import {
   ChevronLeft, Menu
 } from '@mui/icons-material';
-import { menuConfig } from '../../constants/menuConfig';
+import { menuConfig } from '../../constants';
 import colors from '../../styles/colors';
 
 const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
