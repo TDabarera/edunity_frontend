@@ -5,6 +5,7 @@ const colors = {
   headerBg: '#ff4e59',
   footerBg: '#f5f5f5',
   mainBg: '#f9f9f9',
+  bannerBg: '#f2e3e3',
 
   // MUI default palette (v5)
   primary: {
@@ -15,9 +16,9 @@ const colors = {
     outlinedBorder: '#432a2c'
   },
   secondary: {
-    main: '#9c27b0',
-    dark: '#7b1fa2',
-    light: '#ba68c8',
+    main: '#ffa660',
+    dark: '#e48236',
+    light: '#fbc79f',
     contrastText: '#fff'
   },
   error: {

@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Box, Button, Container } from '@mui/material';
 import Login from './Login';
 import Signup from './Signup';
+import Home from './Home';
+import HomeLoggedIn from './HomeLoggedIn';
+import HomeNotLoggedIn from './HomeNotLoggedIn';
 
 const Playground = () => {
   const [currentPage, setCurrentPage] = useState('login');
@@ -32,12 +35,28 @@ const Playground = () => {
         >
           Signup Page
         </Button>
+          <Button 
+          variant={currentPage === 'home' ? 'contained' : 'outlined'} 
+          color="primary"
+          onClick={() => setCurrentPage('home')}
+        >
+          HomePage
+        </Button>
+        <Button 
+          variant={currentPage === 'homeNotLoggedIn' ? 'contained' : 'outlined'} 
+          color="primary"
+          onClick={() => setCurrentPage('homeNotLoggedIn')}
+        >
+          Home Not Logged In
+        </Button>
       </Box>
 
       {/* Page Display */}
       <Box>
         {currentPage === 'login' && <Login onLoginSuccess={handleLoginSuccess} />}
         {currentPage === 'signup' && <Signup onSignupSuccess={handleSignupSuccess} />}
+        {currentPage === 'home' && <Home />} 
+        {currentPage === 'homeNotLoggedIn' && <HomeNotLoggedIn />}
       </Box>
     </Box>
   );

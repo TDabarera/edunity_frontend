@@ -3,7 +3,7 @@ import { Box, Typography } from '@mui/material';
 import colors from '../../styles/colors';
 
 const LoginWelcome = () => (
-  <Box sx={{ textAlign: 'center', color: colors.primary.contrastText, p: 2 }}>
+  <Box sx={{ textAlign: 'center', color: colors.primary.contrastText, p: 2,marginTop: 10 }}>
     <Typography variant="h3" fontWeight="bold" textAlign="center">
       Good to see you again!
     </Typography>

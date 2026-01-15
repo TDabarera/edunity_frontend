@@ -1,14 +1,20 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, Chip } from '@mui/material';
-import SchoolIcon from '@mui/icons-material/School';
 import colors from '../../styles/colors';
 
 const Header = ({ isLoggedIn, user }) => {
   return (
-    <AppBar position="static" sx={{ backgroundColor: colors.headerBg }}>
+    <AppBar position="static" sx={{ backgroundColor: colors.headerBg, padding: 2 }}>
       <Toolbar>
-        {/* Logo Placeholder */}
-        <SchoolIcon sx={{ mr: 1 }} />
+        <Box
+          component="img"
+          src="/Logo/EdUnityLogo.png"
+          alt="EdUnity Logo"
+          sx={{
+            height: 50,
+            mr: 2
+          }}
+        />
         
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 'bold' }}>
           EdUnity
@@ -18,18 +24,24 @@ const Header = ({ isLoggedIn, user }) => {
           {isLoggedIn ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {/* User Info Section */}
-              <Box sx={{ textAlign: 'right' }}>
-                <Typography variant="body2" sx={{ lineHeight: 1 }}>
+              <Box sx={{ textAlign: 'center', alignItems: 'center' }}>
+                <Typography variant="body1" sx={{ lineHeight: 1, mb: 1 }}>
                   {user.name}
                 </Typography>
                 <Chip 
                   label={user.role} 
-                  size="small" 
-                  color="secondary" 
-                  sx={{ height: '16px', fontSize: '0.6rem', textTransform: 'uppercase' }} 
+                  size="medium"
+                  sx={{ 
+                    height: '16px', 
+                    fontSize: '0.8rem', 
+                    textTransform: 'uppercase', 
+                    padding: 2,
+                    backgroundColor: colors.secondary.main,
+                    color: colors.secondary.contrastText
+                  }} 
                 />
               </Box>
-              <Avatar sx={{ bgcolor: 'secondary.main' }}>
+              <Avatar sx={{ bgcolor: colors.secondary.main }}>
                 {user.name.charAt(0)}
               </Avatar>
               <Button color="inherit" variant="outlined" size="small">Logout</Button>
@@ -37,7 +49,7 @@ const Header = ({ isLoggedIn, user }) => {
           ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button color="inherit">Login</Button>
-              <Button variant="contained" color="secondary">Sign Up</Button>
+              <Button variant="contained" sx={{ backgroundColor: colors.primary.light, color: colors.primary.contrastText }}>Sign Up</Button>
             </Box>
           )}
         </Box>

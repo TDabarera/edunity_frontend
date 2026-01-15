@@ -4,22 +4,19 @@ import {
   ListItemText, Divider, IconButton, Box 
 } from '@mui/material';
 import {
-  AccountCircle, People, EventNote, Class, 
-  Assessment, ChevronLeft, ChevronRight, Menu
+  ChevronLeft, Menu
 } from '@mui/icons-material';
+import { menuConfig } from '../../constants/menuConfig';
+import colors from '../../styles/colors';
 
-// 1. Menu Configuration: Industrial practice to keep logic clean
-const menuConfig = [
-  { text: 'My Account', icon: <AccountCircle />, roles: ['Admin', 'Teacher', 'Student'] },
-  { text: 'User Management', icon: <People />, roles: ['Admin'] },
-  { text: 'Attendance', icon: <EventNote />, roles: ['Teacher'] },
-  { text: 'Class Management', icon: <Class />, roles: ['Teacher'] },
-  { text: 'Student Grades', icon: <Assessment />, roles: ['Teacher', 'Admin'] },
-  { text: 'My Grades', icon: <Assessment />, roles: ['Student'] },
-];
-
-const Sidebar = ({ open, toggleDrawer, userRole }) => {
+const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
   const drawerWidth = 240;
+  
+  // Normalize role to match menuConfig (backend sends capitalized)
+  const normalizedRole = userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase() : 'Admin';
+  const filteredItems = menuConfig.filter(item => item.roles.includes(normalizedRole));
+  
+  console.log('Sidebar DEBUG - userRole:', userRole, 'normalizedRole:', normalizedRole, 'filteredItems count:', filteredItems.length, 'filteredItems:', filteredItems);
 
   return (
     <Drawer
@@ -31,36 +28,65 @@ const Sidebar = ({ open, toggleDrawer, userRole }) => {
           width: open ? drawerWidth : 60,
           transition: 'width 0.3s',
           overflowX: 'hidden',
-          top: '64px', // Keeps it below the header
-          height: 'calc(100% - 64px)',
+          position: 'relative',
+          backgroundColor: colors.headerBg,
+          color: 'white',
         },
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: open ? 'flex-end' : 'center', p: 1 }}>
-        <IconButton onClick={toggleDrawer}>
+        <IconButton onClick={toggleDrawer} sx={{ color: 'white' }}>
           {open ? <ChevronLeft /> : <Menu />}
         </IconButton>
       </Box>
-      <Divider />
+      <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
       <List>
-        {menuConfig
-          .filter(item => item.roles.includes(userRole)) // Role-based filtering
-          .map((item) => (
-            <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 0, mr: open ? 3 : 'auto', justifyContent: 'center' }}>
-                  {item.icon}
-                </ListItemIcon>
-                {open && <ListItemText primary={item.text} />}
-              </ListItemButton>
-            </ListItem>
-          ))}
+        {filteredItems
+          .map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
+                <ListItemButton
+                  sx={{
+                    minHeight: 48,
+                    justifyContent: open ? 'initial' : 'center',
+                    px: 2.5,
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ 
+                    minWidth: 0, 
+                    mr: open ? 3 : 'auto', 
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: 32,
+                  }}>
+                    <IconComponent sx={{ fontSize: 32 }} />
+                  </ListItemIcon>
+                  <Box
+                    sx={{
+                      overflow: 'hidden',
+                      width: open ? 'auto' : 0,
+                      transition: 'width 0.3s ease',
+                    }}
+                  >
+                    <ListItemText 
+                      primary={item.text} 
+                      sx={{ 
+                        color: 'white',
+                        opacity: open ? 1 : 0,
+                        transition: 'opacity 0.3s ease 0.2s',
+                        whiteSpace: 'nowrap',
+                      }} 
+                    />
+                  </Box>
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
       </List>
     </Drawer>
   );

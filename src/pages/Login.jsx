@@ -74,12 +74,20 @@ const Login = ({ onLoginSuccess }) => {
           m:0,
         }}
       >
-        <Box sx={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+        <Box sx={{ width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center', position: 'relative', height: '100%' }}>
          <LoginWelcome />
-         <img 
-           src="\Characters\LogIn.png" 
+         <Box
+           component="img"
+           src="/Characters/LogIn.png" 
            alt="Smiling cartoon character with raised hand in a welcoming gesture, standing in a bright and colorful digital environment designed for a login page. The mood is friendly and inviting." 
-           style={{ width: '100%', maxWidth: '400px' }} 
+           sx={{ 
+             position: 'absolute',
+             bottom: 0,
+             left: 0,
+             width: '600px',  // Manual size control
+             height: 'auto',
+             transform: 'translateX(-56px)',  // Manual x-axis positioning control
+           }}
          />
         </Box>
       </Grid>
