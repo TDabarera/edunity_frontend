@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, MenuItem } from '@mui/material';
 
-const SelectInput = ({ label, value, onChange, options, error, ...props }) => {
+const SelectInput = ({ label, value, onChange, options, error, helperText, ...props }) => {
   return (
     <TextField
       select
@@ -12,7 +12,7 @@ const SelectInput = ({ label, value, onChange, options, error, ...props }) => {
       value={value}
       onChange={onChange}
       error={!!error}
-      helperText={error}
+      helperText={helperText}
       {...props}
     >
       {options.map((option) => (

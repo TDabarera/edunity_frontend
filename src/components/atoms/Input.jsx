@@ -11,9 +11,9 @@ const Input = ({ label, type = "text", value, onChange, error, helperText, ...pr
       type={type}
       value={value}
       onChange={onChange}
-      error={!!error} // Converts error string to boolean for red border
-      helperText={error || helperText} // Shows error message if exists
-      {...props} // Allows passing other standard MUI props
+      error={!!error}
+      helperText={helperText}
+      {...props}
     />
   );
 };

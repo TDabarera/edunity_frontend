@@ -2,17 +2,17 @@
 
 const colors = {
   // Custom project colors
-  headerBg: '#deb63f',
+  headerBg: '#ff4e59',
   footerBg: '#f5f5f5',
   mainBg: '#f9f9f9',
 
   // MUI default palette (v5)
   primary: {
-    main: '#1976d2',
-    dark: '#1565c0',
-    light: '#42a5f5',
+    main: '#ff4e59',
+    dark: '#87070f',
+    light: '#ffa660',
     contrastText: '#fff',
-    outlinedBorder: 'rgba(25, 118, 210, 0.5)'
+    outlinedBorder: '#432a2c'
   },
   secondary: {
     main: '#9c27b0',
@@ -40,6 +40,23 @@ const colors = {
     primary: 'rgba(0,0,0,0.87)',
     secondary: 'rgba(0,0,0,0.6)',
     disabled: 'rgba(0,0,0,0.38)'
+  },
+  button: {
+    // Primary button variants
+    primaryContained: '#ff4e59',
+    primaryContainedHover: '#e63f49',
+    primaryOutlined: '#ff4e59',
+    primaryOutlinedHover: 'rgba(255, 78, 89, 0.04)',
+    primaryText: '#ff4e59',
+    primaryTextHover: 'rgba(255, 78, 89, 0.04)',
+    // Secondary button variants
+    secondaryContained: '#9c27b0',
+    secondaryContainedHover: '#7b1fa2',
+    secondaryOutlined: '#9c27b0',
+    secondaryOutlinedHover: 'rgba(156, 39, 176, 0.04)',
+    // Disabled state
+    disabled: 'rgba(0,0,0,0.12)',
+    disabledText: 'rgba(0,0,0,0.26)'
   },
 };
 
