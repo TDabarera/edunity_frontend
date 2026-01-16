@@ -7,7 +7,8 @@ const Button = ({ children, onClick, variant = "contained", color = "primary", .
     const baseStyles = {
       mt: 2,
       mb: 2,
-      p: 2,
+      px: 4,
+      py: 1.5,
       textTransform: 'none',
       fontSize: '1rem',
       fontWeight: 500,

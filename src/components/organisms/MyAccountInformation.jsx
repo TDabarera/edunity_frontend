@@ -4,6 +4,7 @@ import { Input, Button, SelectInput } from '../atoms';
 import { GetUserById, UpdateUserById } from '../../services';
 import { useToast } from './Toast';
 import { useAuth } from '../../context/AuthContext';
+import Popup from './Popup';
 import colors from '../../styles/colors';
 
 const userTypeOptions = [
@@ -16,6 +17,9 @@ const userTypeOptions = [
 const MyAccountInformation = ({ userId: userIdProp }) => {
   const { user, updateProfile } = useAuth();
   const userId = userIdProp || user?.id || user?._id;
+  
+  //console.log('MyAccountInformation rendering:', { userId, user });
+  
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -31,6 +35,7 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
     updatedAt: '',
   });
   const [initialData, setInitialData] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
   const { open, message, severity, showToast, closeToast, Toast: ToastComponent } = useToast();
 
   const handleChange = (key) => (e) => {
@@ -44,9 +49,11 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
       return;
     }
     try {
+      //console.log('Loading user:', userId);
       setLoading(true);
       setError('');
       const res = await GetUserById(userId);
+      //console.log('User loaded:', res);
       const data = res?.user || {};
       const nextState = {
         firstName: data.firstName || '',
@@ -72,6 +79,7 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
         });
       }
     } catch (err) {
+      //console.error('Error loading user:', err);
       const errMsg = err?.message || 'Failed to load account information';
       setError(errMsg);
       showToast(errMsg, 'error');
@@ -93,8 +101,14 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
     if (initialData) setForm(initialData);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSaveClick = (e) => {
     e.preventDefault();
+    if (!canSave || !userId) return;
+    setShowPopup(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setShowPopup(false);
     if (!canSave || !userId) return;
     try {
       setSaving(true);
@@ -136,6 +150,10 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
     }
   };
 
+  const handleCancelSave = () => {
+    setShowPopup(false);
+  };
+
   const metaRow = (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -156,11 +174,11 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
   );
 
   return (
-    <Card sx={{ boxShadow: 3, border: `1px solid ${colors.primary.greyLight}` }}>
+    <Card elevation={4} sx={{ p: 4 }}>
       <CardHeader
         title="My Account Information"
         subheader="View and edit your profile details"
-        sx={{ backgroundColor: 'white', borderBottom: `1px solid ${colors.primary.greyLight}` }}
+        sx={{ backgroundColor: 'white'}}
       />
       <CardContent>
         {loading ? (
@@ -170,26 +188,23 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
         ) : error ? (
           <Typography color="error" sx={{ py: 2 }}>{error}</Typography>
         ) : (
-          <Box component="form" onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSaveClick}>
             {metaRow}
             <Divider sx={{ my: 3 }} />
             <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <Input label="First Name" value={form.firstName} onChange={handleChange('firstName')} required />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <Input label="Last Name" value={form.lastName} onChange={handleChange('lastName')} required />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} required />
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <Input label="Phone" value={form.phone} onChange={handleChange('phone')} />
               </Grid>
-              <Grid item xs={12}>
-                <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={2} />
-              </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <SelectInput
                   label="User Type"
                   value={form.userType}
@@ -197,8 +212,8 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
                   options={userTypeOptions}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Input label="Account Number" value={form.accountNumber} onChange={handleChange('accountNumber')} />
+              <Grid item xs={12} sx={{ width: '100%' }}>
+                <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={2} />
               </Grid>
             </Grid>
 
@@ -206,7 +221,7 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
               <Button variant="outlined" onClick={handleReset} disabled={saving}>
                 Reset
               </Button>
-              <Button variant="contained" type="submit" onClick={handleSubmit} disabled={!canSave || saving}>
+              <Button variant="contained" type="submit" onClick={handleSaveClick} disabled={!canSave || saving}>
                 {saving ? 'Saving...' : 'Save Changes'}
               </Button>
             </Stack>
@@ -214,6 +229,15 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
         )}
       </CardContent>
       <ToastComponent open={open} message={message} severity={severity} onClose={closeToast} />
+      <Popup
+        open={showPopup}
+        title="Are Sure you want to Update the Account?"
+        description="Selecting 'Save' will update your account information with the changes you've made and cannot be undone"
+        onConfirm={handleConfirmSave}
+        onCancel={handleCancelSave}
+        confirmText="Save"
+        cancelText="Cancel"
+      />
     </Card>
   );
 };
