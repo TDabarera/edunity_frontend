@@ -1,0 +1,221 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Stack, Typography } from '@mui/material';
+import { Input, Button, SelectInput } from '../atoms';
+import { GetUserById, UpdateUserById } from '../../services';
+import { useToast } from './Toast';
+import { useAuth } from '../../context/AuthContext';
+import colors from '../../styles/colors';
+
+const userTypeOptions = [
+  { label: 'Admin', value: 'Admin' },
+  { label: 'Teacher', value: 'Teacher' },
+  { label: 'Student', value: 'Student' },
+  { label: 'Parent', value: 'Parent' },
+];
+
+const MyAccountInformation = ({ userId: userIdProp }) => {
+  const { user, updateProfile } = useAuth();
+  const userId = userIdProp || user?.id || user?._id;
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    accountNumber: '',
+    userType: '',
+    email: '',
+    phone: '',
+    address: '',
+    createdAt: '',
+    updatedAt: '',
+  });
+  const [initialData, setInitialData] = useState(null);
+  const { open, message, severity, showToast, closeToast, Toast: ToastComponent } = useToast();
+
+  const handleChange = (key) => (e) => {
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+  };
+
+  const loadUser = useCallback(async () => {
+    if (!userId) {
+      setError('User information is unavailable. Please log in again.');
+      setLoading(false);
+      return;
+    }
+    try {
+      setLoading(true);
+      setError('');
+      const res = await GetUserById(userId);
+      const data = res?.user || {};
+      const nextState = {
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        accountNumber: data.accountNumber || '',
+        userType: data.userType || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        address: data.address || '',
+        createdAt: data.createdAt || '',
+        updatedAt: data.updatedAt || '',
+      };
+      setForm(nextState);
+      setInitialData(nextState);
+      const displayName = [data.firstName, data.lastName].filter(Boolean).join(' ') || data.email;
+      if (updateProfile) {
+        updateProfile({
+          id: data._id || data.id || userId,
+          email: data.email,
+          role: data.userType,
+          name: displayName,
+          classId: data.classId,
+        });
+      }
+    } catch (err) {
+      const errMsg = err?.message || 'Failed to load account information';
+      setError(errMsg);
+      showToast(errMsg, 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast, updateProfile, userId]);
+
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
+  const canSave = useMemo(() => {
+    const required = ['firstName', 'lastName', 'email'];
+    return required.every((field) => (form[field] || '').toString().trim().length > 0);
+  }, [form]);
+
+  const handleReset = () => {
+    if (initialData) setForm(initialData);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!canSave || !userId) return;
+    try {
+      setSaving(true);
+      const payload = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        accountNumber: form.accountNumber,
+        userType: form.userType,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+      };
+      const res = await UpdateUserById(userId, payload);
+      const updatedUser = res?.user || payload;
+      const successMsg = res?.message || 'Account updated successfully';
+      showToast(successMsg, 'success');
+      const merged = {
+        ...form,
+        ...updatedUser,
+        updatedAt: updatedUser.updatedAt || new Date().toISOString(),
+      };
+      setForm((prev) => ({ ...prev, ...merged }));
+      setInitialData((prev) => ({ ...prev, ...merged }));
+      const displayName = [merged.firstName, merged.lastName].filter(Boolean).join(' ') || merged.email;
+      if (updateProfile) {
+        updateProfile({
+          id: updatedUser._id || updatedUser.id || userId,
+          email: merged.email,
+          role: merged.userType,
+          name: displayName,
+          classId: merged.classId,
+        });
+      }
+    } catch (err) {
+      const errMsg = err?.message || 'Failed to update account';
+      showToast(errMsg, 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const metaRow = (
+    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="caption" color="text.secondary">Account Number</Typography>
+        <Typography variant="body2" fontWeight={600}>{form.accountNumber || '—'}</Typography>
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="caption" color="text.secondary">User Type</Typography>
+        <Typography variant="body2" fontWeight={600}>{form.userType || '—'}</Typography>
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="caption" color="text.secondary">Last Updated</Typography>
+        <Typography variant="body2" fontWeight={600}>
+          {form.updatedAt ? new Date(form.updatedAt).toLocaleString() : '—'}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+  return (
+    <Card sx={{ boxShadow: 3, border: `1px solid ${colors.primary.greyLight}` }}>
+      <CardHeader
+        title="My Account Information"
+        subheader="View and edit your profile details"
+        sx={{ backgroundColor: 'white', borderBottom: `1px solid ${colors.primary.greyLight}` }}
+      />
+      <CardContent>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <CircularProgress color="primary" />
+          </Box>
+        ) : error ? (
+          <Typography color="error" sx={{ py: 2 }}>{error}</Typography>
+        ) : (
+          <Box component="form" onSubmit={handleSubmit}>
+            {metaRow}
+            <Divider sx={{ my: 3 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Input label="First Name" value={form.firstName} onChange={handleChange('firstName')} required />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Input label="Last Name" value={form.lastName} onChange={handleChange('lastName')} required />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} required />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Input label="Phone" value={form.phone} onChange={handleChange('phone')} />
+              </Grid>
+              <Grid item xs={12}>
+                <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={2} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <SelectInput
+                  label="User Type"
+                  value={form.userType}
+                  onChange={handleChange('userType')}
+                  options={userTypeOptions}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Input label="Account Number" value={form.accountNumber} onChange={handleChange('accountNumber')} />
+              </Grid>
+            </Grid>
+
+            <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+              <Button variant="outlined" onClick={handleReset} disabled={saving}>
+                Reset
+              </Button>
+              <Button variant="contained" type="submit" onClick={handleSubmit} disabled={!canSave || saving}>
+                {saving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </Stack>
+          </Box>
+        )}
+      </CardContent>
+      <ToastComponent open={open} message={message} severity={severity} onClose={closeToast} />
+    </Card>
+  );
+};
+
+export default MyAccountInformation;

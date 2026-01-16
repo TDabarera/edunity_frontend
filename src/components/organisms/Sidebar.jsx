@@ -6,17 +6,27 @@ import {
 import {
   ChevronLeft, Menu
 } from '@mui/icons-material';
-import { menuConfig } from '../../constants/menuConfig';
+import { menuConfig } from '../../constants';
 import colors from '../../styles/colors';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
   const drawerWidth = 240;
+  const navigate = useNavigate();
+  
+  // Map menu items to routes
+  const menuRoutes = {
+    'My Account': '/my-account',
+    'User Management': '/user-management',
+    'Attendance': '/attendance',
+    'Class Management': '/class-management',
+    'Student Grades': '/student-grades',
+    'My Grades': '/my-grades',
+  };
   
   // Normalize role to match menuConfig (backend sends capitalized)
   const normalizedRole = userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase() : 'Admin';
   const filteredItems = menuConfig.filter(item => item.roles.includes(normalizedRole));
-  
-  console.log('Sidebar DEBUG - userRole:', userRole, 'normalizedRole:', normalizedRole, 'filteredItems count:', filteredItems.length, 'filteredItems:', filteredItems);
 
   return (
     <Drawer
@@ -47,6 +57,13 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
             return (
               <ListItem key={item.text} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton
+                  onClick={() => {
+                    const route = menuRoutes[item.text];
+                    if (route) {
+                      navigate(route);
+                      toggleDrawer(false);
+                    }
+                  }}
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? 'initial' : 'center',

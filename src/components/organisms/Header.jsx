@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, Chip } from '@mui/material';
 import colors from '../../styles/colors';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Popup from './Popup';
 
 const Header = ({ isLoggedIn, user }) => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [openLogoutPopup, setOpenLogoutPopup] = useState(false);
+
+  const handleLogoutClick = () => {
+    setOpenLogoutPopup(true);
+  };
+
+  const handleConfirmLogout = () => {
+    logout();
+    setOpenLogoutPopup(false);
+    navigate('/');
+  };
+
+  const handleCancelLogout = () => {
+    setOpenLogoutPopup(false);
+  };
   return (
     <AppBar position="static" sx={{ backgroundColor: colors.headerBg, padding: 2 }}>
       <Toolbar>
@@ -21,15 +41,15 @@ const Header = ({ isLoggedIn, user }) => {
         </Typography>
 
         <Box>
-          {isLoggedIn ? (
+          {isLoggedIn && user ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               {/* User Info Section */}
               <Box sx={{ textAlign: 'center', alignItems: 'center' }}>
                 <Typography variant="body1" sx={{ lineHeight: 1, mb: 1 }}>
-                  {user.name}
+                  {user?.name || 'User'}
                 </Typography>
                 <Chip 
-                  label={user.role} 
+                  label={user?.role || 'User'} 
                   size="medium"
                   sx={{ 
                     height: '16px', 
@@ -42,18 +62,36 @@ const Header = ({ isLoggedIn, user }) => {
                 />
               </Box>
               <Avatar sx={{ bgcolor: colors.secondary.main }}>
-                {user.name.charAt(0)}
+                {user?.name?.charAt(0) || 'U'}
               </Avatar>
-              <Button color="inherit" variant="outlined" size="small">Logout</Button>
+              <Button color="inherit" variant="outlined" size="small" onClick={handleLogoutClick}>Logout</Button>
             </Box>
           ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <Button color="inherit">Login</Button>
-              <Button variant="contained" sx={{ backgroundColor: colors.primary.light, color: colors.primary.contrastText }}>Sign Up</Button>
+              <Button
+              color="inherit" onClick={() => navigate('/login')}>Login
+              </Button>
+              <Button
+              variant="contained"
+              sx={{ backgroundColor: colors.primary.light, color: colors.primary.contrastText }}
+              onClick={() => navigate('/signup')}
+              >
+                Sign Up</Button>
             </Box>
           )}
         </Box>
       </Toolbar>
+
+      {/* Logout Confirmation Popup */}
+      <Popup
+        open={openLogoutPopup}
+        title="Are you sure you want to logout?"
+        description= <> Logging out will end your current session and you will need to log in again to access your account. </>
+        confirmText="Yes"
+        cancelText="No"
+        onConfirm={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+      />
     </AppBar>
   );
 };

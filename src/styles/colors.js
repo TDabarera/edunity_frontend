@@ -13,12 +13,14 @@ const colors = {
     dark: '#87070f',
     light: '#ffa660',
     contrastText: '#fff',
-    outlinedBorder: '#432a2c'
+    outlinedBorder: '#432a2c',
+    grey: '#969696',
+    greyLight: '#f2eeee'
   },
   secondary: {
     main: '#ffa660',
     dark: '#e48236',
-    light: '#fbc79f',
+    light: '#d8d3d0',
     contrastText: '#fff'
   },
   error: {

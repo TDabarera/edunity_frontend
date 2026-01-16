@@ -1,19 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import HomeLoggedIn from './HomeLoggedIn';
 import HomeNotLoggedIn from './HomeNotLoggedIn';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Home = () => {
-  const [isLoggedIn] = useState(true);
-  const [user] = useState({
-    name: 'John Doe',
-    role: 'admin'
-  });
-
-  return isLoggedIn ? (
-    <HomeLoggedIn user={user} />
-  ) : (
-    <HomeNotLoggedIn />
-  );
+  const { isLoggedIn, user } = useAuth();
+  return isLoggedIn ? <HomeLoggedIn user={user} /> : <HomeNotLoggedIn />;
 };
 
 export default Home;
