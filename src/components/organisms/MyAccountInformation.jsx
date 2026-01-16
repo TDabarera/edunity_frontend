@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Grid, Stack, Typography } from '@mui/material';
-import { Input, Button, SelectInput } from '../atoms';
+import { Input, Button, SelectInput, Skeleton } from '../atoms';
 import { GetUserById, UpdateUserById } from '../../services';
 import { useToast } from './Toast';
 import { useAuth } from '../../context/AuthContext';
@@ -182,8 +182,46 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
       />
       <CardContent>
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress color="primary" />
+          <Box>
+            <Box sx={{ display: 'flex', gap: 2, mt: 1, mb: 3 }}>
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="40%" height={20} />
+                <Skeleton variant="text" width="60%" height={24} />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="40%" height={20} />
+                <Skeleton variant="text" width="60%" height={24} />
+              </Box>
+              <Box sx={{ flex: 1 }}>
+                <Skeleton variant="text" width="40%" height={20} />
+                <Skeleton variant="text" width="80%" height={24} />
+              </Box>
+            </Box>
+            <Divider sx={{ my: 3 }} />
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={6}>
+                <Skeleton variant="rectangular" height={56} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton variant="rectangular" height={56} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton variant="rectangular" height={56} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton variant="rectangular" height={56} />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <Skeleton variant="rectangular" height={56} />
+              </Grid>
+              <Grid item xs={12}>
+                <Skeleton variant="rectangular" height={80} />
+              </Grid>
+            </Grid>
+            <Stack direction="row" justifyContent="flex-end" spacing={2} sx={{ mt: 2 }}>
+              <Skeleton variant="rectangular" width={100} height={42} />
+              <Skeleton variant="rectangular" width={140} height={42} />
+            </Stack>
           </Box>
         ) : error ? (
           <Typography color="error" sx={{ py: 2 }}>{error}</Typography>

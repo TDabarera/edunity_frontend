@@ -9,8 +9,8 @@ import UserTable from './UserTable.jsx';
 import UserForm from './UserForm.jsx';
 import Popup from './Popup.jsx';
 import MyAccountInformation from './MyAccountInformation.jsx';
-import ClassForm from './ClassForm.jsx';
 import ClassTable from './ClassTable.jsx';
+import ClassForm from './ClassForm.jsx';
 
 export {
     Header,
@@ -24,6 +24,8 @@ export {
     UserForm,
     Popup,
     MyAccountInformation,
-    ClassForm,
     ClassTable,
+    ClassForm,
 };
+
+

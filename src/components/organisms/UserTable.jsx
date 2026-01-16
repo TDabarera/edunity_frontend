@@ -9,19 +9,25 @@ import {
   CircularProgress,
   Typography,
   TablePagination,
+  Grid,
 } from '@mui/material';
-import { SearchBar, Button } from '../atoms';
+import { SearchBar, Button, Skeleton, SelectInput, Input } from '../atoms';
 import { TableHeader, RowActions } from '../molecules';
 import colors from '../../styles/colors';
 import { GetAllUsers } from '../../services';
 
-const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken }) => {
+const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken, currentUserId }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userTypeFilter, setUserTypeFilter] = useState('');
+  const [accountFilter, setAccountFilter] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage] = useState(20);
+
+  // Check if user is the current logged-in user
+  const isCurrentUser = (userId) => userId === currentUserId;
 
   // Fetch users on mount
   useEffect(() => {
@@ -54,19 +60,24 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken 
       const email = (user.email || '').toLowerCase();
       const userType = (user.userType || '').toLowerCase();
       const phone = (user.phone || '').toLowerCase();
-      const accountNo = (user.accountNo || '').toLowerCase();
+      const accountNo = (user.accountNumber || user.accountNo || '').toLowerCase();
       const search = searchTerm.toLowerCase();
+      const userTypeMatch = userTypeFilter ? userType === userTypeFilter.toLowerCase() : true;
+      const accountMatch = accountFilter
+        ? accountNo.includes(accountFilter.toLowerCase())
+        : true;
 
-      return (
+      const textMatch =
         fullName.includes(search) ||
         email.includes(search) ||
         userType.includes(search) ||
         phone.includes(search) ||
-        accountNo.includes(search)
-      );
+        accountNo.includes(search);
+
+      return userTypeMatch && accountMatch && textMatch;
     });
     setFilteredUsers(filtered);
-  }, [searchTerm, users]);
+  }, [searchTerm, users, userTypeFilter, accountFilter]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -81,32 +92,71 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken 
   return (
     <Box sx={{ p: 3 }}>
       {/* Header with Search and Add Button */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 3,
-          gap: 2,
-        }}
-      >
-        <SearchBar
-          placeholder="Search by Name, Email, User Type"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ flex: 1, maxWidth: '400px' }}
-        />
-        <Button variant="contained" onClick={onAddUser}>
-          Add User
-        </Button>
+      <Box sx={{ mb: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={4} sx={{ minWidth: 400 }}>
+            <SearchBar
+              placeholder="Search by name, email, phone, account"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              sx={{ width: '100%' }}
+            />
+          </Grid>
+          <Grid item xs={12} md={4} sx={{ minWidth: 160 }}>
+            <SelectInput
+              label="User Type"
+              value={userTypeFilter}
+              onChange={(e) => setUserTypeFilter(e.target.value)}
+              options={[
+                { label: 'All', value: '' },
+                { label: 'Admin', value: 'Admin' },
+                { label: 'Teacher', value: 'Teacher' },
+                { label: 'Student', value: 'Student' },
+                { label: 'Parent', value: 'Parent' }
+              ]}
+              sx={{ width: '100%' }}
+              placeholder="All"
+            />
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Input
+              label="Account Number"
+              value={accountFilter}
+              onChange={(e) => setAccountFilter(e.target.value)}
+              placeholder="Account #"
+              sx={{ width: '100%' }}
+            />
+          </Grid>
+          <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Button variant="contained" onClick={onAddUser}>
+              Add User
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
-
       {/* Table Container */}
       <Paper sx={{ p: 4, elevation: 2 }}>
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
-          </Box>
+          <Table>
+            <TableHeader />
+            <TableBody>
+              {[...Array(5)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell><Skeleton variant="text" width="80%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="90%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="60%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="70%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="50%" /></TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                      <Skeleton variant="circular" width={32} height={32} />
+                      <Skeleton variant="circular" width={32} height={32} />
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         ) : filteredUsers.length === 0 ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             <Typography variant="body1" color={colors.text.secondary}>
@@ -136,7 +186,8 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken 
                   <TableCell>
                     <RowActions
                       onEdit={() => onEditUser(user)}
-                      onDelete={() => onDeleteUser(user._id)}
+                      onDelete={isCurrentUser(user._id) ? null : () => onDeleteUser(user._id)}
+                      disableDelete={isCurrentUser(user._id)}
                     />
                   </TableCell>
                 </TableRow>

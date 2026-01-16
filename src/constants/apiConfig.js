@@ -16,9 +16,9 @@ export const API_ENDPOINTS = {
   // Admin endpoints
   USER_MANAGEMENT: '/admin/users',
   GET_USERS: '/users',
-  CREATE_USER: '/admin/users',
-  UPDATE_USER_ADMIN: '/admin/users/:id',
-  DELETE_USER: '/admin/users/:id',
+  CREATE_USER: '/users/createuser',
+  UPDATE_USER_ADMIN: '/users/:id',
+  DELETE_USER: '/users/:id',
 
   // Teacher endpoints
   ATTENDANCE: '/teacher/attendance',

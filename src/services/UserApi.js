@@ -33,19 +33,27 @@ export const GetAllUsers = GetUsers;
 
 export const CreateUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.CREATE_USER}`, userData, {
+    const url = `${API_BASE_URL}${API_ENDPOINTS.CREATE_USER}`;
+    console.log('[UserApi] CreateUser URL:', url);
+    console.log('[UserApi] CreateUser payload:', userData);
+    const response = await axios.post(url, userData, {
       headers: getAuthHeader(),
     });
     return response.data;
   } catch (error) {
+    console.error('[UserApi] CreateUser error URL:', `${API_BASE_URL}${API_ENDPOINTS.CREATE_USER}`);
     throw handleApiError(error, 'Failed to create user');
   }
 };
 
 export const UpdateUser = async (userId, userData) => {
   try {
+    const endpoint = API_ENDPOINTS.UPDATE_USER_ADMIN.replace(':id', userId);
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log('[UserApi] UpdateUser URL:', url);
+    console.log('[UserApi] UpdateUser payload:', userData);
     const response = await axios.put(
-      `${API_BASE_URL}${API_ENDPOINTS.UPDATE_USER_ADMIN.replace(':id', userId)}`,
+      url,
       userData,
       {
         headers: getAuthHeader(),
@@ -53,6 +61,8 @@ export const UpdateUser = async (userId, userData) => {
     );
     return response.data;
   } catch (error) {
+    const endpoint = API_ENDPOINTS.UPDATE_USER_ADMIN.replace(':id', userId);
+    console.error('[UserApi] UpdateUser error URL:', `${API_BASE_URL}${endpoint}`);
     throw handleApiError(error, 'Failed to update user');
   }
 };

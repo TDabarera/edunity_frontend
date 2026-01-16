@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Container, Box, Dialog, DialogContent } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
 import { UserTable, Toast, UserForm, Popup } from '../components/organisms';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,8 @@ const UserManagement = () => {
   const [refreshToken, setRefreshToken] = useState('');
   const [confirmDeleteUser, setConfirmDeleteUser] = useState(null);
 
+  const currentUserId = user?.id || user?._id;
+
   const handleAddUser = () => {
     setShowCreate(true);
   };
@@ -25,6 +27,17 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = (userId) => {
+    console.log('[UserManagement] handleDeleteUser called');
+    console.log('  userId to delete:', userId);
+    console.log('  currentUserId:', currentUserId);
+    console.log('  match:', userId === currentUserId);
+
+    if (userId === currentUserId) {
+      console.log('  -> BLOCKED: Attempting to delete current user');
+      showToast('Cannot delete the currently logged-in user', 'warning');
+      return;
+    }
+    console.log('  -> ALLOWED: Opening delete confirmation');
     setConfirmDeleteUser(userId);
   };
 
@@ -41,12 +54,12 @@ const UserManagement = () => {
           onDeleteUser={handleDeleteUser}
           onError={handleTableError}
           refreshToken={refreshToken}
+          currentUserId={currentUserId}
         />
       </Container>
 
       {/* Create User Modal */}
       <Dialog open={showCreate} onClose={() => setShowCreate(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Create User</DialogTitle>
         <DialogContent>
           <UserForm
             onSuccess={(created) => {
@@ -61,7 +74,6 @@ const UserManagement = () => {
 
       {/* Edit User Modal */}
       <Dialog open={!!editUser} onClose={() => setEditUser(null)} maxWidth="md" fullWidth>
-        <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           {editUser && (
             <UserForm
@@ -80,11 +92,21 @@ const UserManagement = () => {
       {/* Delete Confirmation Popup */}
       <Popup
         open={!!confirmDeleteUser}
-        title="Are you sure you want to delete this user?"
-        description= <> Deleting this user will remove all associated data and cannot be undone. </>
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={confirmDeleteUser === user?._id ? "Cannot Delete User" : "Are you sure you want to delete this user?"}
+        description={
+          confirmDeleteUser === currentUserId ? (
+            <> You cannot delete the currently logged-in user. </>
+          ) : (
+            <> Deleting this user will remove all associated data and cannot be undone. </>
+          )
+        }
+        confirmText={confirmDeleteUser === currentUserId ? "OK" : "Delete"}
+        cancelText={confirmDeleteUser === currentUserId ? "" : "Cancel"}
         onConfirm={async () => {
+          if (confirmDeleteUser === currentUserId) {
+            setConfirmDeleteUser(null);
+            return;
+          }
           try {
             const res = await DeleteUser(confirmDeleteUser);
             showToast(res?.message || 'User deleted successfully!', 'success');
