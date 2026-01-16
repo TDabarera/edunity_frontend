@@ -21,7 +21,7 @@ const Login = () => {
       showToast('Login successful!', 'success');
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {
-      const errorMsg = err.message || 'Login failed';
+      const errorMsg = err.message || err.data?.message || 'Login failed';
       showToast(errorMsg, 'error');
       setLoading(false);
     }
@@ -33,8 +33,8 @@ const Login = () => {
         container 
         sx={{ 
           height: '100vh',   // Spans the full viewport height
-          width: '100%',     // Spans full width
-          m: -1,            // Remove default margins
+          width: '100vw',     // Spans full width
+          m: 0,            // Remove default margins
         }}
       >
         {/* --- Left Column (Header + Form) --- */}
@@ -51,7 +51,7 @@ const Login = () => {
             p: 4,
             m:0,                     // Padding
             bgcolor: colors.mainBg,   // Optional: BG for the form side
-            width: '50%',
+            width: { xs: '100vw', md: '50%' },
           }}
         >
           {/* Inner Content Box for Width Control */}
@@ -70,10 +70,10 @@ const Login = () => {
         {/* --- Right Column (Welcome + Color) --- */}
         <Grid 
           item 
-          xs={false} // Hides element on extra-small screens (mobile)
+          xs={false}
           md={6} 
           sx={{
-            display:'flex', // Ensure it's Flex on Desktop, None on Mobile
+            display: { xs: 'none', md: 'flex' },
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
@@ -82,7 +82,7 @@ const Login = () => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             color: 'white',
-            width: '50%',
+            width: { xs: '100vw', md: '50%' },
             m:0,
           }}
         >

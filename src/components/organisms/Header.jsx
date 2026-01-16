@@ -1,16 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { AppBar, Toolbar, Typography, Button, Box, Avatar, Chip } from '@mui/material';
 import colors from '../../styles/colors';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Popup from './Popup';
 
 const Header = ({ isLoggedIn, user }) => {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const [openLogoutPopup, setOpenLogoutPopup] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setOpenLogoutPopup(true);
+  };
+
+  const handleConfirmLogout = () => {
     logout();
+    setOpenLogoutPopup(false);
     navigate('/');
+  };
+
+  const handleCancelLogout = () => {
+    setOpenLogoutPopup(false);
   };
   return (
     <AppBar position="static" sx={{ backgroundColor: colors.headerBg, padding: 2 }}>
@@ -53,7 +64,7 @@ const Header = ({ isLoggedIn, user }) => {
               <Avatar sx={{ bgcolor: colors.secondary.main }}>
                 {user?.name?.charAt(0) || 'U'}
               </Avatar>
-              <Button color="inherit" variant="outlined" size="small" onClick={handleLogout}>Logout</Button>
+              <Button color="inherit" variant="outlined" size="small" onClick={handleLogoutClick}>Logout</Button>
             </Box>
           ) : (
             <Box sx={{ display: 'flex', gap: 1 }}>
@@ -70,6 +81,17 @@ const Header = ({ isLoggedIn, user }) => {
           )}
         </Box>
       </Toolbar>
+
+      {/* Logout Confirmation Popup */}
+      <Popup
+        open={openLogoutPopup}
+        title="Are you sure you want to logout?"
+        description= <> Logging out will end your current session and you will need to log in again to access your account. </>
+        confirmText="Yes"
+        cancelText="No"
+        onConfirm={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+      />
     </AppBar>
   );
 };
