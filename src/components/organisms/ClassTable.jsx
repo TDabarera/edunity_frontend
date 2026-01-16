@@ -9,10 +9,10 @@ import {
   CircularProgress,
   Typography,
   TablePagination,
-  TableHead,
 } from '@mui/material';
-import { SearchBar, Button } from '../atoms';
+import { SearchBar, Button, Skeleton } from '../atoms';
 import { RowActions } from '../molecules';
+import ClassTableHeader from '../molecules/ClassTableHeader';
 import colors from '../../styles/colors';
 import { GetAllClasses } from '../../services';
 
@@ -52,7 +52,9 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
   useEffect(() => {
     const filtered = classes.filter((cls) => {
       const className = (cls.className || '').toLowerCase();
-      const year = (cls.year || '').toLowerCase();
+      const level = (cls.level || '').toString().toLowerCase();
+      const order = (cls.order || '').toLowerCase();
+      const year = (cls.year || '').toString().toLowerCase();
       const teacherName = cls.teacherIncharge 
         ? `${cls.teacherIncharge.firstName || ''} ${cls.teacherIncharge.lastName || ''}`.toLowerCase()
         : '';
@@ -60,6 +62,8 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
 
       return (
         className.includes(search) ||
+        level.includes(search) ||
+        order.includes(search) ||
         year.includes(search) ||
         teacherName.includes(search)
       );
@@ -88,11 +92,10 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
           alignItems: 'center',
           mb: 3,
           gap: 2,
-          flexWrap: 'wrap',
         }}
       >
         <SearchBar
-          placeholder="Search by Class Name, Year, Teacher"
+          placeholder="Search by Class Name, Level or Year"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           sx={{ flex: 1, maxWidth: '400px' }}
@@ -103,11 +106,28 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
       </Box>
 
       {/* Table Container */}
-      <Paper sx={{ p: 4, elevation: 2, overflowX: 'auto' }}>
+      <Paper sx={{ p: 4, elevation: 2 }}>
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
-          </Box>
+          <Table>
+            <ClassTableHeader />
+            <TableBody>
+              {[...Array(5)].map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell><Skeleton variant="text" width="80%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="30%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="30%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="40%" /></TableCell>
+                  <TableCell><Skeleton variant="text" width="85%" /></TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                      <Skeleton variant="circular" width={32} height={32} />
+                      <Skeleton variant="circular" width={32} height={32} />
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         ) : filteredClasses.length === 0 ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             <Typography variant="body1" color={colors.text.secondary}>
@@ -116,16 +136,7 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
           </Box>
         ) : (
           <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: colors.primary.greyLight }}>
-                <TableCell sx={{ fontWeight: 600 }}>Class Name</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Year</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Teacher in Charge</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
+            <ClassTableHeader />
             <TableBody>
               {paginatedClasses.map((cls) => (
                 <TableRow
@@ -137,13 +148,15 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
                   }}
                 >
                   <TableCell>{cls.className}</TableCell>
+                  <TableCell>{cls.level}</TableCell>
+                  <TableCell>{cls.order}</TableCell>
                   <TableCell>{cls.year}</TableCell>
                   <TableCell>
                     {cls.teacherIncharge
                       ? `${cls.teacherIncharge.firstName} ${cls.teacherIncharge.lastName}`
                       : '-'}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell>
                     <RowActions
                       onEdit={() => onEditClass(cls)}
                       onDelete={() => onDeleteClass(cls._id)}
@@ -159,13 +172,17 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
       {/* Pagination */}
       {!loading && filteredClasses.length > 0 && (
         <TablePagination
-          rowsPerPageOptions={[10, 20, 50]}
+          rowsPerPageOptions={[20]}
           component="div"
           count={filteredClasses.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            mt: 2,
+          }}
         />
       )}
     </Box>

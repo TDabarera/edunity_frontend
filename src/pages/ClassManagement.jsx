@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Box, Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
-import { ClassTable, Toast, ClassForm, Popup } from '../components/organisms';
+import { ClassTable, Toast, Popup, ClassForm } from '../components/organisms';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/organisms/Toast';
 import { DeleteClass, GetAllUsers } from '../services';
@@ -9,6 +9,8 @@ import { DeleteClass, GetAllUsers } from '../services';
 const ClassManagement = () => {
   const { user } = useAuth();
   const { open, message, severity, showToast, closeToast, Toast: ToastComponent } = useToast();
+
+  console.log('[ClassManagement] Component rendered, user:', user?.email);
 
   // Modal state
   const [showCreate, setShowCreate] = useState(false);
@@ -21,17 +23,21 @@ const ClassManagement = () => {
   // Fetch teachers on mount
   useEffect(() => {
     const fetchTeachers = async () => {
+      console.log('[ClassManagement] fetchTeachers start');
       try {
         setLoadingTeachers(true);
         const response = await GetAllUsers();
         const allUsers = response.users || [];
         const teacherList = allUsers.filter((u) => u.userType === 'Teacher');
         setTeachers(teacherList);
+        console.log('[ClassManagement] fetched teachers', teacherList.length);
       } catch (error) {
         const errorMsg = error.message || 'Failed to fetch teachers';
         showToast(errorMsg, 'error');
+        console.error('[ClassManagement] fetchTeachers error', error);
       } finally {
         setLoadingTeachers(false);
+        console.log('[ClassManagement] fetchTeachers done');
       }
     };
 
@@ -39,14 +45,17 @@ const ClassManagement = () => {
   }, [showToast]);
 
   const handleAddClass = () => {
+    console.log('[ClassManagement] handleAddClass');
     setShowCreate(true);
   };
 
   const handleEditClass = (classData) => {
+    console.log('[ClassManagement] handleEditClass', classData?._id);
     setEditClass(classData);
   };
 
   const handleDeleteClass = (classId) => {
+    console.log('[ClassManagement] handleDeleteClass', classId);
     setConfirmDeleteClass(classId);
   };
 
@@ -77,39 +86,53 @@ const ClassManagement = () => {
 
       {/* Create Class Modal */}
       <Dialog open={showCreate} onClose={() => setShowCreate(false)} maxWidth="md" fullWidth>
-        <DialogTitle>Create Class</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
+        <DialogContent sx={{ pt: 0, pb: 0 }}>
           {loadingTeachers ? (
             <Typography>Loading teachers...</Typography>
           ) : (
-            <ClassForm
-              onSuccess={(created) => {
-                setShowCreate(false);
-                showToast('Class created successfully!', 'success');
-                setRefreshToken(String(Date.now()));
-              }}
-              onCancel={() => setShowCreate(false)}
-              teachers={teachers}
-            />
+            <>
+              {console.log('[ClassManagement] Rendering ClassForm for create, teachers:', teachers.length)}
+              <ClassForm
+                onSuccess={(created) => {
+                  console.log('[ClassManagement] class created success:', created);
+                  setShowCreate(false);
+                  showToast('Class created successfully!', 'success');
+                  setRefreshToken(String(Date.now()));
+                  console.log('[ClassManagement] class created', created?._id || created);
+                }}
+                onCancel={() => {
+                  console.log('[ClassManagement] ClassForm cancelled');
+                  setShowCreate(false);
+                }}
+                teachers={teachers}
+              />
+            </>
           )}
         </DialogContent>
       </Dialog>
 
       {/* Edit Class Modal */}
       <Dialog open={!!editClass} onClose={() => setEditClass(null)} maxWidth="md" fullWidth>
-        <DialogTitle>Edit Class</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
+        <DialogContent sx={{ pt: 0, pb: 0 }}>
           {editClass && (
-            <ClassForm
-              classData={editClass}
-              onSuccess={(updated) => {
-                setEditClass(null);
-                showToast('Class updated successfully!', 'success');
-                setRefreshToken(String(Date.now()));
-              }}
-              onCancel={() => setEditClass(null)}
-              teachers={teachers}
-            />
+            <>
+              {console.log('[ClassManagement] Rendering ClassForm for edit, classId:', editClass?._id, 'teachers:', teachers.length)}
+              <ClassForm
+                classData={editClass}
+                onSuccess={(updated) => {
+                  console.log('[ClassManagement] class updated success:', updated);
+                  setEditClass(null);
+                  showToast('Class updated successfully!', 'success');
+                  setRefreshToken(String(Date.now()));
+                  console.log('[ClassManagement] class updated', updated?._id || updated);
+                }}
+                onCancel={() => {
+                  console.log('[ClassManagement] ClassForm edit cancelled');
+                  setEditClass(null);
+                }}
+                teachers={teachers}
+              />
+            </>
           )}
         </DialogContent>
       </Dialog>

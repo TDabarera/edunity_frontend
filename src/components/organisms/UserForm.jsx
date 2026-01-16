@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Grid } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Divider, Grid } from '@mui/material';
 import { Input, SelectInput, Button } from '../atoms';
-import colors from '../../styles/colors';
-import { CreateUser, UpdateUser } from '../../services';
+import { CreateUser, UpdateUser, GetAllClasses } from '../../services';
 import { useToast } from './Toast';
+import Popup from './Popup';
 
 const userTypeOptions = [
   { label: 'Admin', value: 'Admin' },
@@ -17,6 +17,7 @@ const initialForm = {
   lastName: '',
   email: '',
   password: '',
+  confirmPassword: '',
   phone: '',
   address: '',
   userType: '',
@@ -28,6 +29,8 @@ const UserForm = ({ user = null, onSuccess, onCancel }) => {
   const isEdit = !!user;
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
+  const [classes, setClasses] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
   const { open, message, severity, showToast, closeToast, Toast: ToastComponent } = useToast();
 
   useEffect(() => {
@@ -37,6 +40,7 @@ const UserForm = ({ user = null, onSuccess, onCancel }) => {
         lastName: user.lastName || '',
         email: user.email || '',
         password: '', // hidden in edit mode
+        confirmPassword: '',
         phone: user.phone || '',
         address: user.address || '',
         userType: user.userType || '',
@@ -48,9 +52,24 @@ const UserForm = ({ user = null, onSuccess, onCancel }) => {
     }
   }, [isEdit, user]);
 
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const res = await GetAllClasses();
+        const list = res?.data || res?.classes || [];
+        setClasses(list);
+      } catch (err) {
+        const errorMsg = err?.data?.error || err?.message || 'Failed to fetch classes';
+        showToast(errorMsg, 'error');
+      }
+    };
+
+    fetchClasses();
+  }, [showToast]);
+
   const canSubmit = useMemo(() => {
     const required = ['firstName', 'lastName', 'email', 'userType'];
-    if (!isEdit) required.push('password');
+    if (!isEdit) required.push('password', 'confirmPassword');
     return required.every((k) => (form[k] || '').toString().trim().length > 0);
   }, [form, isEdit]);
 
@@ -58,25 +77,42 @@ const UserForm = ({ user = null, onSuccess, onCancel }) => {
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSaveClick = (e) => {
     e.preventDefault();
     if (!canSubmit) {
       showToast('Please fill all required fields.', 'warning');
       return;
     }
+    if (!isEdit && form.password !== form.confirmPassword) {
+      showToast('Passwords do not match.', 'warning');
+      return;
+    }
+    setShowPopup(true);
+  };
+
+  const handleConfirmSave = async () => {
+    setShowPopup(false);
+
+    if (!canSubmit) return;
+
     try {
       setSubmitting(true);
       if (isEdit) {
         const payload = { ...form };
-        // Ensure password is not sent in update
         delete payload.password;
+        delete payload.confirmPassword;
+        console.log('[UserForm] Update payload:', payload);
         const res = await UpdateUser(user._id, payload);
+        console.log('[UserForm] Update response:', res);
         const successMsg = res?.message || 'User updated successfully';
         showToast(successMsg, 'success');
         if (onSuccess) onSuccess(res?.user || payload);
       } else {
         const createPayload = { ...form };
+        delete createPayload.confirmPassword;
+        console.log('[UserForm] Create payload:', createPayload);
         const res = await CreateUser(createPayload);
+        console.log('[UserForm] Create response:', res);
         const successMsg = res?.message || 'User created successfully!';
         showToast(successMsg, 'success');
         if (onSuccess) onSuccess(res?.user || createPayload);
@@ -84,67 +120,149 @@ const UserForm = ({ user = null, onSuccess, onCancel }) => {
     } catch (err) {
       const errorMsg = err?.data?.error || err?.message || 'Operation failed';
       showToast(errorMsg, 'error');
+      console.error('[UserForm] Operation error:', err);
     } finally {
       setSubmitting(false);
     }
   };
 
+  const handleCancelSave = () => {
+    setShowPopup(false);
+  };
+
+  const handleReset = () => {
+    if (isEdit && user) {
+      setForm({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        password: '',
+        confirmPassword: '',
+        phone: user.phone || '',
+        address: user.address || '',
+        userType: user.userType || '',
+        dob: user.dob ? String(user.dob).slice(0, 10) : '',
+        classId: user.classId || '',
+      });
+    } else {
+      setForm(initialForm);
+    }
+  };
+
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ p: 2 }}>
-      <Grid container spacing={2}>
-        {/* Name Group */}
-        <Grid item xs={12} md={6}>
-          <Input label="First Name" value={form.firstName} onChange={handleChange('firstName')} required />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Input label="Last Name" value={form.lastName} onChange={handleChange('lastName')} required />
-        </Grid>
+    <Card elevation={0} sx={{ p: 4, m: 0, boxShadow: 'none', borderRadius: 0 }}>
+      <CardHeader
+        title={isEdit ? 'Edit User' : 'Create User'}
+        subheader={isEdit ? 'Update user information' : 'Add a new user to the system'}
+        sx={{ backgroundColor: 'white' }}
+      />
+      <CardContent sx={{ p: 3 }}>
+        <Box component="form" onSubmit={handleSaveClick}>
+          <Divider sx={{ mb: 3 }} />
 
-        {/* Contact Group */}
-        <Grid item xs={12} md={6}>
-          <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} required />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Input label="Phone" type="tel" value={form.phone} onChange={handleChange('phone')} />
-        </Grid>
-        <Grid item xs={12}>
-          <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={3} />
-        </Grid>
+          <Grid container spacing={2}>
+            {/* Name Group */}
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <Input label="First Name" value={form.firstName} onChange={handleChange('firstName')} required />
+            </Grid>
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <Input label="Last Name" value={form.lastName} onChange={handleChange('lastName')} required />
+            </Grid>
 
-        {/* Role / Details */}
-        <Grid item xs={12} md={6}>
-          <SelectInput label="User Type" value={form.userType} onChange={handleChange('userType')} options={userTypeOptions} required />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Input label="Date of Birth" type="date" value={form.dob} onChange={handleChange('dob')} />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Input label="Class ID" value={form.classId} onChange={handleChange('classId')} />
-        </Grid>
+            {/* Contact Group */}
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <Input label="Email" type="email" value={form.email} onChange={handleChange('email')} required />
+            </Grid>
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <Input label="Phone" type="tel" value={form.phone} onChange={handleChange('phone')} />
+            </Grid>
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={3} />
+            </Grid>
 
-        {/* Security (Create Mode Only) */}
-        {!isEdit && (
-          <Grid item xs={12} md={6}>
-            <Input label="Password" type="password" value={form.password} onChange={handleChange('password')} required />
+            {/* Role / Details */}
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <SelectInput label="User Type" value={form.userType} onChange={handleChange('userType')} options={userTypeOptions} required />
+            </Grid>
+            <Grid item xs={12} sx={{ width: '100%' }}>
+        <Input
+          label="Date of Birth"
+          name="dob"
+          type="date"
+          value={form.dob}
+          onChange={handleChange('dob')}
+          required
+          InputLabelProps={{ shrink: true }}
+          inputProps={{ max: new Date().toISOString().slice(0, 10) }}
+          fullWidth
+        />
+            </Grid>
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <SelectInput
+                label="Class Name"
+                value={form.classId}
+                onChange={handleChange('classId')}
+                options={(classes || []).map((cls) => ({
+                  label: cls.className || `${cls.level || ''}${cls.order || ''} ${cls.year || ''}`.trim(),
+                  value: cls._id,
+                }))}
+                placeholder={classes.length ? 'Select class' : 'No classes available'}
+              />
+            </Grid>
+
+            {/* Security (Create Mode Only) */}
+            {!isEdit && (
+              <Grid item xs={12} sx={{ width: '100%' }}>
+                <Input label="Password" type="password" value={form.password} onChange={handleChange('password')} required />
+              </Grid>
+            )}
+            {!isEdit && (
+              <Grid item xs={12} sx={{ width: '100%' }}>
+                <Input
+                  label="Confirm Password"
+                  type="password"
+                  value={form.confirmPassword}
+                  onChange={handleChange('confirmPassword')}
+                  required
+                />
+              </Grid>
+            )}
+
+            {/* Actions */}
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 1 }}>
+                <Button variant="outlined" onClick={handleReset} disabled={submitting}>
+                  Reset
+                </Button>
+                {onCancel && (
+                  <Button variant="outlined" onClick={onCancel} disabled={submitting}>
+                    Cancel
+                  </Button>
+                )}
+                <Button variant="contained" type="submit" onClick={handleSaveClick} disabled={!canSubmit || submitting}>
+                  {submitting ? 'Saving...' : isEdit ? 'Update User' : 'Create User'}
+                </Button>
+              </Box>
+            </Grid>
           </Grid>
-        )}
+        </Box>
+      </CardContent>
 
-        {/* Actions */}
-        <Grid item xs={12}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button variant="outlined" onClick={onCancel} disabled={submitting}>
-              Cancel
-            </Button>
-            <Button variant="contained" onClick={handleSubmit} disabled={!canSubmit || submitting}>
-              {isEdit ? 'Update User' : 'Create User'}
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>
-
-      {/* Toast */}
       <ToastComponent open={open} message={message} severity={severity} onClose={closeToast} />
-    </Box>
+      <Popup
+        open={showPopup}
+        title={isEdit ? 'Update User' : 'Create User'}
+        description={
+          isEdit
+            ? 'Are you sure you want to update this user information?'
+            : 'Are you sure you want to create this new user?'
+        }
+        onConfirm={handleConfirmSave}
+        onCancel={handleCancelSave}
+        confirmText={isEdit ? 'Update' : 'Create'}
+        cancelText="Cancel"
+      />
+    </Card>
   );
 };
 

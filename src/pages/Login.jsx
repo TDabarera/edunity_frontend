@@ -34,7 +34,7 @@ const Login = () => {
         sx={{ 
           height: '100vh',   // Spans the full viewport height
           width: '100vw',     // Spans full width
-          m: 0,            // Remove default margins
+          m: -1,            // Remove default margins
         }}
       >
         {/* --- Left Column (Header + Form) --- */}
@@ -98,7 +98,7 @@ const Login = () => {
                left: 0,
                width: '600px',  // Manual size control
                height: 'auto',
-               transform: 'translateX(-56px)',  // Manual x-axis positioning control
+               transform: 'translateX(-63px)',  // Manual x-axis positioning control
              }}
            />
           </Box>
