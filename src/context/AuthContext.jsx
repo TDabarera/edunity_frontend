@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
-import { loginUser, signupUser } from '../services/api';
+import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
+import { LoginUser, SignupUser } from '../services';
 
 const AuthContext = createContext(null);
 
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await loginUser(email, password);
+    const response = await LoginUser(email, password);
     const { token: newToken, user: backendUser } = response;
     
     const newUser = {
@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (data) => {
-    const response = await signupUser(data);
+    const response = await SignupUser(data);
     const { token: newToken, user: backendUser } = response;
     
     const newUser = {
@@ -76,6 +76,14 @@ export const AuthProvider = ({ children }) => {
     return newUser;
   };
 
+  const updateProfile = useCallback((partialUser) => {
+    setUser((prev) => {
+      const merged = { ...(prev || {}), ...(partialUser || {}) };
+      persist(token, merged);
+      return merged;
+    });
+  }, [token]);
+
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -88,7 +96,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const value = useMemo(() => ({ user, token, isLoggedIn, login, logout, signup }), [user, token, isLoggedIn]);
+  const value = useMemo(() => ({ user, token, isLoggedIn, login, logout, signup, updateProfile }), [user, token, isLoggedIn, updateProfile]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

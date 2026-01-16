@@ -21,7 +21,7 @@ const Signup = () => {
       showToast('Signup successful!', 'success');
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {
-      const errorMsg = err.message || 'Signup failed';
+      const errorMsg = err.message || err.data?.message || 'Signup failed';
       showToast(errorMsg, 'error');
       setLoading(false);
     }
