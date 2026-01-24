@@ -53,7 +53,6 @@ const Attendance = () => {
           u => u.userType === 'Student' && u.classId === selectedClass
         );
 
-        console.log('[Attendance] Found students:', classStudents.length);
         setStudents(classStudents);
 
         // Initialize attendance data with 'present' as default
@@ -62,12 +61,7 @@ const Attendance = () => {
           initialData[student._id || student.id] = 'present';
         });
         setAttendanceData(initialData);
-
-        if (classStudents.length > 0) {
-          showToast(`Loaded ${classStudents.length} students`, 'info');
-        }
       } catch (error) {
-        console.error('[Attendance] Error fetching students:', error);
         showToast(error.message || 'Failed to load students', 'error');
         setStudents([]);
       } finally {
@@ -104,40 +98,20 @@ const Attendance = () => {
     try {
       setSubmitting(true);
       
-      const attendanceRecords = students.map(student => {
-        const status = attendanceData[student._id || student.id] || 'present';
-        return {
-          studentId: student._id || student.id,
-          status: status.charAt(0).toUpperCase() + status.slice(1) // Capitalize: "present" -> "Present"
-        };
-      });
-
-      const payload = {
+      const records = students.map(student => ({
+        studentId: student._id || student.id,
+        studentName: `${student.firstName} ${student.lastName}`,
         classId: selectedClass,
         date: selectedDate,
-        markedBy: user?._id || user?.id,
-        attendanceRecords: attendanceRecords
-      };
+        status: attendanceData[student._id || student.id] || 'present',
+        markedBy: `${user?.role}`
+      }));
 
-      console.log('[Attendance] Students count:', students.length);
-      console.log('[Attendance] Attendance records array:', attendanceRecords);
-      console.log('[Attendance] Payload being sent:', JSON.stringify(payload, null, 2));
+      await CreateAttendanceRecord({ records });
       
-      const response = await CreateAttendanceRecord(payload);
-      console.log('[Attendance] Response:', response);
-      
-      // Check if the server returned status: false (business logic error)
-      if (response.status === false) {
-        showToast(response.message || 'Failed to save attendance', 'warning');
-      } else {
-        showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
-      }
+      showToast(`Attendance marked for ${students.length} students`, 'success');
     } catch (error) {
-      console.error('[Attendance] Error:', error);
-      console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }

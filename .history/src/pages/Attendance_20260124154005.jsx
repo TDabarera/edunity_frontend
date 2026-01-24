@@ -112,32 +112,18 @@ const Attendance = () => {
         };
       });
 
-      const payload = {
-        classId: selectedClass,
-        date: selectedDate,
-        markedBy: user?._id || user?.id,
-        attendanceRecords: attendanceRecords
-      };
-
       console.log('[Attendance] Students count:', students.length);
       console.log('[Attendance] Attendance records array:', attendanceRecords);
-      console.log('[Attendance] Payload being sent:', JSON.stringify(payload, null, 2));
+      console.log('[Attendance] Payload being sent:', JSON.stringify({ attendanceRecords }, null, 2));
       
-      const response = await CreateAttendanceRecord(payload);
+      const response = await CreateAttendanceRecord({ attendanceRecords });
       console.log('[Attendance] Response:', response);
       
-      // Check if the server returned status: false (business logic error)
-      if (response.status === false) {
-        showToast(response.message || 'Failed to save attendance', 'warning');
-      } else {
-        showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
-      }
+      showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
     } catch (error) {
       console.error('[Attendance] Error:', error);
       console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }

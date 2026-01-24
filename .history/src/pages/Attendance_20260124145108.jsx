@@ -53,7 +53,6 @@ const Attendance = () => {
           u => u.userType === 'Student' && u.classId === selectedClass
         );
 
-        console.log('[Attendance] Found students:', classStudents.length);
         setStudents(classStudents);
 
         // Initialize attendance data with 'present' as default
@@ -62,12 +61,7 @@ const Attendance = () => {
           initialData[student._id || student.id] = 'present';
         });
         setAttendanceData(initialData);
-
-        if (classStudents.length > 0) {
-          showToast(`Loaded ${classStudents.length} students`, 'info');
-        }
       } catch (error) {
-        console.error('[Attendance] Error fetching students:', error);
         showToast(error.message || 'Failed to load students', 'error');
         setStudents([]);
       } finally {
@@ -83,6 +77,39 @@ const Attendance = () => {
     return null;
   }
 
+  const handleMarkAttendance = async () => {
+    if (!selectedClass) {
+      showToast('Please select a class first', 'warning');
+      return;
+    }
+
+    try {
+      // Fetch students for the selected class
+      const response = await GetAllUsers();
+      const allUsers = response.users || [];
+      const classStudents = allUsers.filter(
+        u => u.userType === 'Student' && u.classId === selectedClass
+      );
+
+      if (classStudents.length === 0) {
+        showToast('No students found in this class', 'info');
+        return;
+      }
+
+      setStudents(classStudents);
+      
+      // Initialize attendance data with 'present' as default
+      const initialData = {};
+      classStudents.forEach(student => {
+        initialData[student._id || student.id] = 'present';
+      });
+      setAttendanceData(initialData);
+      setShowMarkDialog(true);
+    } catch (error) {
+      showToast(error.message || 'Failed to load students', 'error');
+    }
+  };
+
   const handleStatusChange = (studentId, status) => {
     setAttendanceData(prev => ({
       ...prev,
@@ -91,56 +118,32 @@ const Attendance = () => {
   };
 
   const handleSaveAttendance = async () => {
-    if (!selectedClass) {
-      showToast('Please select a class', 'warning');
-      return;
-    }
-
-    if (students.length === 0) {
-      showToast('No students to mark attendance for', 'warning');
-      return;
-    }
-
     try {
       setSubmitting(true);
       
-      const attendanceRecords = students.map(student => {
-        const status = attendanceData[student._id || student.id] || 'present';
-        return {
-          studentId: student._id || student.id,
-          status: status.charAt(0).toUpperCase() + status.slice(1) // Capitalize: "present" -> "Present"
-        };
-      });
-
-      const payload = {
+      const records = students.map(student => ({
+        studentId: student._id || student.id,
+        studentName: `${student.firstName} ${student.lastName}`,
         classId: selectedClass,
         date: selectedDate,
-        markedBy: user?._id || user?.id,
-        attendanceRecords: attendanceRecords
-      };
+        status: attendanceData[student._id || student.id] || 'present',
+        markedBy: `${user?.role}`
+      }));
 
-      console.log('[Attendance] Students count:', students.length);
-      console.log('[Attendance] Attendance records array:', attendanceRecords);
-      console.log('[Attendance] Payload being sent:', JSON.stringify(payload, null, 2));
+      await CreateAttendanceRecord({ records });
       
-      const response = await CreateAttendanceRecord(payload);
-      console.log('[Attendance] Response:', response);
-      
-      // Check if the server returned status: false (business logic error)
-      if (response.status === false) {
-        showToast(response.message || 'Failed to save attendance', 'warning');
-      } else {
-        showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
-      }
+      showToast(`Attendance marked for ${students.length} students`, 'success');
+      setShowMarkDialog(false);
+      setRefreshToken(Date.now().toString());
     } catch (error) {
-      console.error('[Attendance] Error:', error);
-      console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleError = (errorMsg) => {
+    console.error('Attendance error:', errorMsg);
   };
 
   return (
@@ -151,51 +154,32 @@ const Attendance = () => {
           subtitle="Track and manage student attendance"
         />
 
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3 }}>
-          <Box sx={{ flex: 1 }}>
-            <SelectClass
-              value={selectedClass}
-              onChange={setSelectedClass}
-              label="Select Class"
-            />
-          </Box>
-          <Box>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              style={{
-                padding: '16px',
-                fontSize: '16px',
-                borderRadius: '4px',
-                border: '1px solid #ccc',
-              }}
-            />
-          </Box>
+        <Box sx={{ mb: 3 }}>
+          <SelectClass
+            value={selectedClass}
+            onChange={setSelectedClass}
+            label="Select Class"
+          />
         </Box>
 
-        <Paper elevation={2} sx={{ p: 3 }}>
-          {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-              <CircularProgress />
-            </Box>
-          ) : !selectedClass ? (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography color="text.secondary">
-                Please select a class to view students
-              </Typography>
-            </Box>
-          ) : students.length === 0 ? (
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography color="text.secondary">
-                No students found in this class
-              </Typography>
-            </Box>
-          ) : (
-            <>
+        <AttendanceTable
+          onMarkAttendance={handleMarkAttendance}
+          onError={handleError}
+          refreshToken={refreshToken}
+          teacherRole={user?.role}
+          teacherId={user?.id}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+        />
+
+        {/* Mark Attendance Dialog */}
+        <Dialog open={showMarkDialog} onClose={() => setShowMarkDialog(false)} maxWidth="md" fullWidth>
+          <DialogTitle>Mark Attendance - {selectedDate}</DialogTitle>
+          <DialogContent>
+            <Paper elevation={0} sx={{ mt: 2 }}>
               <TableContainer>
                 <Table>
-                  <TableHeader columns={attendanceColumns} />
+                  <TableHeader columns={markAttendanceColumns} />
                   <TableBody>
                     {students.map((student) => (
                       <TableRow key={student._id || student.id}>
@@ -212,19 +196,17 @@ const Attendance = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                <Button 
-                  onClick={handleSaveAttendance} 
-                  disabled={submitting}
-                  size="large"
-                >
-                  {submitting ? 'Saving...' : 'Save Attendance'}
-                </Button>
-              </Box>
-            </>
-          )}
-        </Paper>
+            </Paper>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button variant="outlined" onClick={() => setShowMarkDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveAttendance} disabled={submitting}>
+              {submitting ? 'Saving...' : 'Save Attendance'}
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         <ToastComponent />
       </Container>

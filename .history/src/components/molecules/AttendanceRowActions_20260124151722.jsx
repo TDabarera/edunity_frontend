@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
+import colors from '../../styles/colors';
 
 const AttendanceRowActions = ({ studentName, accountNumber, initialStatus, onStatusChange }) => {
   const [status, setStatus] = useState(initialStatus || null);

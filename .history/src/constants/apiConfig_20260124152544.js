@@ -28,7 +28,7 @@ export const API_ENDPOINTS = {
   // Attendance endpoints
   GET_ATTENDANCE: '/attendance',
   GET_ATTENDANCE_BY_ID: '/attendance/:id',
-  CREATE_ATTENDANCE: '/attendance/mark',
+  CREATE_ATTENDANCE: '/attendance',
   UPDATE_ATTENDANCE: '/attendance/:id',
   DELETE_ATTENDANCE: '/attendance/:id',
   GET_ATTENDANCE_STATS: '/attendance/stats',

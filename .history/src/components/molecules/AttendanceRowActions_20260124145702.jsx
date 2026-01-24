@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { CheckCircle, Cancel } from '@mui/icons-material';
+import colors from '../../styles/colors';
 
 const AttendanceRowActions = ({ studentName, accountNumber, initialStatus, onStatusChange }) => {
   const [status, setStatus] = useState(initialStatus || null);
@@ -42,12 +43,13 @@ const AttendanceRowActions = ({ studentName, accountNumber, initialStatus, onSta
         <ToggleButton 
           value="present"
           sx={{
-            m:2,
+             m:1,
             '&.Mui-selected': {
-              backgroundColor:'#4caf50',
+              backgroundColor: colors.success?.main || '#4caf50',
               color: 'white',
+              m:1,
               '&:hover': {
-                backgroundColor:'#388e3c',
+                backgroundColor: colors.success?.dark || '#388e3c',
               },
             },
           }}
@@ -58,12 +60,12 @@ const AttendanceRowActions = ({ studentName, accountNumber, initialStatus, onSta
         <ToggleButton 
           value="absent"
           sx={{
-            m:2,
+             m:1,
             '&.Mui-selected': {
-              backgroundColor:'#f44336',
+              backgroundColor: colors.error?.main || '#f44336',
               color: 'white',
               '&:hover': {
-                backgroundColor:'#d32f2f',
+                backgroundColor: colors.error?.dark || '#d32f2f',
               },
             },
           }}

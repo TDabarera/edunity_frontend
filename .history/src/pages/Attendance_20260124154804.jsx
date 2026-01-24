@@ -108,14 +108,15 @@ const Attendance = () => {
         const status = attendanceData[student._id || student.id] || 'present';
         return {
           studentId: student._id || student.id,
-          status: status.charAt(0).toUpperCase() + status.slice(1) // Capitalize: "present" -> "Present"
+          status: status // Keep lowercase: "present" or "absent"
         };
       });
 
       const payload = {
         classId: selectedClass,
+        markedBy: user?.username || user?.name || user?.email,
         date: selectedDate,
-        markedBy: user?._id || user?.id,
+        timestamp: new Date().toISOString(),
         attendanceRecords: attendanceRecords
       };
 
@@ -126,18 +127,16 @@ const Attendance = () => {
       const response = await CreateAttendanceRecord(payload);
       console.log('[Attendance] Response:', response);
       
-      // Check if the server returned status: false (business logic error)
+      // Check if the server returned status: false
       if (response.status === false) {
-        showToast(response.message || 'Failed to save attendance', 'warning');
+        showToast(response.message || 'Failed to save attendance', 'error');
       } else {
         showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
       }
     } catch (error) {
       console.error('[Attendance] Error:', error);
       console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }

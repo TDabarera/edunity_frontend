@@ -115,7 +115,6 @@ const Attendance = () => {
       const payload = {
         classId: selectedClass,
         date: selectedDate,
-        markedBy: user?._id || user?.id,
         attendanceRecords: attendanceRecords
       };
 
@@ -126,18 +125,11 @@ const Attendance = () => {
       const response = await CreateAttendanceRecord(payload);
       console.log('[Attendance] Response:', response);
       
-      // Check if the server returned status: false (business logic error)
-      if (response.status === false) {
-        showToast(response.message || 'Failed to save attendance', 'warning');
-      } else {
-        showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
-      }
+      showToast(response.message || `Attendance marked for ${students.length} students`, 'success');
     } catch (error) {
       console.error('[Attendance] Error:', error);
       console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }

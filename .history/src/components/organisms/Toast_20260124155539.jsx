@@ -26,7 +26,7 @@ export const useToast = () => {
     setMessage(msg);
     setSeverity(sev);
     setOpen(true);
-  }, [setMessage, setSeverity, setOpen]);
+  }, []);
 
   const closeToast = () => {
     setOpen(false);

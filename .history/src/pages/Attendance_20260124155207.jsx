@@ -108,14 +108,15 @@ const Attendance = () => {
         const status = attendanceData[student._id || student.id] || 'present';
         return {
           studentId: student._id || student.id,
-          status: status.charAt(0).toUpperCase() + status.slice(1) // Capitalize: "present" -> "Present"
+          status: status // Keep lowercase: "present" or "absent"
         };
       });
 
       const payload = {
         classId: selectedClass,
+        markedBy: user?.username || user?.name || user?.email,
         date: selectedDate,
-        markedBy: user?._id || user?.id,
+        timestamp: new Date().toISOString(),
         attendanceRecords: attendanceRecords
       };
 
@@ -135,9 +136,7 @@ const Attendance = () => {
     } catch (error) {
       console.error('[Attendance] Error:', error);
       console.error('[Attendance] Error data:', error.data);
-      console.log('[Attendance] About to show toast with message:', error.message);
       showToast(error.message || 'Failed to save attendance', 'error');
-      console.log('[Attendance] showToast called');
     } finally {
       setSubmitting(false);
     }
