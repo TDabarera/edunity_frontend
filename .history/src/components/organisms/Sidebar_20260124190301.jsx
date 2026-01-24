@@ -4,28 +4,18 @@ import {
   ListItemText, Divider, IconButton, Box 
 } from '@mui/material';
 import {
-  ChevronLeft, Menu, Home
+  ChevronLeft, Menu
 } from '@mui/icons-material';
 import { menuConfig } from '../../constants';
 import colors from '../../styles/colors';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
   const drawerWidth = 240;
   const navigate = useNavigate();
-  const location = useLocation();
   
-  // Map menu text to routes
   const menuRoutes = {
-    'Home': '/',
-    'My Account': '/my-account',
-    'User Management': '/user-management',
-    'Class Management': '/class-management',
-    'Parents': '/parent-management',
-    'Attendance': '/attendance',
-    'Student Grades': '/student-grades',
-    'My Grades': '/my-grades',
-  };
+  
   
   // Normalize role to match menuConfig (backend sends capitalized)
   const normalizedRole = userRole ? userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase() : 'Admin';
@@ -54,52 +44,6 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
       </Box>
       <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
       <List>
-        {/* Home Link - Always visible */}
-        <ListItem disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            onClick={() => {
-              navigate('/');
-              toggleDrawer(false);
-            }}
-            sx={{
-              minHeight: 48,
-              justifyContent: open ? 'initial' : 'center',
-              px: 2.5,
-              color: 'white',
-              backgroundColor: location.pathname === '/' ? 'rgba(255,255,255,0.2)' : 'transparent',
-              '&:hover': {
-                backgroundColor: location.pathname === '/' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
-              },
-            }}
-          >
-            <ListItemIcon sx={{ 
-              minWidth: 0, 
-              mr: open ? 3 : 'auto', 
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: 32,
-            }}>
-              <Home sx={{ fontSize: 32 }} />
-            </ListItemIcon>
-            <Box
-              sx={{
-                overflow: 'hidden',
-                width: open ? 'auto' : 0,
-                transition: 'width 0.3s ease',
-              }}
-            >
-              <ListItemText 
-                primary="Home" 
-                sx={{ 
-                  color: 'white',
-                  opacity: open ? 1 : 0,
-                  transition: 'opacity 0.3s ease 0.2s',
-                  whiteSpace: 'nowrap',
-                }} 
-              />
-            </Box>
-          </ListItemButton>
-        </ListItem>
         {filteredItems
           .map((item) => {
             const IconComponent = item.icon;
@@ -118,9 +62,8 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
                     justifyContent: open ? 'initial' : 'center',
                     px: 2.5,
                     color: 'white',
-                    backgroundColor: location.pathname === menuRoutes[item.text] ? 'rgba(255,255,255,0.2)' : 'transparent',
                     '&:hover': {
-                      backgroundColor: location.pathname === menuRoutes[item.text] ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
+                      backgroundColor: 'rgba(255,255,255,0.1)',
                     },
                   }}
                 >

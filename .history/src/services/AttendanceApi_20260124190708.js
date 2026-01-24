@@ -63,6 +63,7 @@ export const GetAttendanceById = async (recordId) => {
  */
 export const GetAttendanceByClass = async (classId) => {
   try {
+    // Try the path parameter approach first: /attendance/class/:classId
     const url = `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE_BY_CLASS.replace(':classId', classId)}`;
     
     console.log('[DEBUG GetAttendanceByClass] Full URL:', url);

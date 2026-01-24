@@ -198,8 +198,6 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken,
                       onEdit={() => onEditUser(user)}
                       onDelete={isCurrentUser(user._id) ? null : () => onDeleteUser(user._id)}
                       disableDelete={isCurrentUser(user._id)}
-                      editIcon={editIcon}
-                      editTooltip={editTooltip}
                     />
                   </TableCell>
                 </TableRow>

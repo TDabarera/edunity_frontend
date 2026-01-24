@@ -16,7 +16,7 @@ import { TableHeader, RowActions } from '../molecules';
 import colors from '../../styles/colors';
 import { GetAllUsers } from '../../services';
 
-const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken, currentUserId, filterByRole, hideUserTypeFilter = false, editIcon, editTooltip }) => {
+const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken, currentUserId, filterByRole, hideUserTypeFilter = false }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -198,8 +198,6 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken,
                       onEdit={() => onEditUser(user)}
                       onDelete={isCurrentUser(user._id) ? null : () => onDeleteUser(user._id)}
                       disableDelete={isCurrentUser(user._id)}
-                      editIcon={editIcon}
-                      editTooltip={editTooltip}
                     />
                   </TableCell>
                 </TableRow>

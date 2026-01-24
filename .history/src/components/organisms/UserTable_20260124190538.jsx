@@ -16,7 +16,7 @@ import { TableHeader, RowActions } from '../molecules';
 import colors from '../../styles/colors';
 import { GetAllUsers } from '../../services';
 
-const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken, currentUserId, filterByRole, hideUserTypeFilter = false, editIcon, editTooltip }) => {
+const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken, currentUserId, filterByRole }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -110,24 +110,22 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken,
               sx={{ width: '100%' }}
             />
           </Grid>
-          {!hideUserTypeFilter && (
-            <Grid item xs={12} md={4} sx={{ minWidth: 160 }}>
-              <SelectInput
-                label="User Type"
-                value={userTypeFilter}
-                onChange={(e) => setUserTypeFilter(e.target.value)}
-                options={[
-                  { label: 'All', value: '' },
-                  { label: 'Admin', value: 'Admin' },
-                  { label: 'Teacher', value: 'Teacher' },
-                  { label: 'Student', value: 'Student' },
-                  { label: 'Parent', value: 'Parent' }
-                ]}
-                sx={{ width: '100%' }}
-                placeholder="All"
-              />
-            </Grid>
-          )}
+          <Grid item xs={12} md={4} sx={{ minWidth: 160 }}>
+            <SelectInput
+              label="User Type"
+              value={userTypeFilter}
+              onChange={(e) => setUserTypeFilter(e.target.value)}
+              options={[
+                { label: 'All', value: '' },
+                { label: 'Admin', value: 'Admin' },
+                { label: 'Teacher', value: 'Teacher' },
+                { label: 'Student', value: 'Student' },
+                { label: 'Parent', value: 'Parent' }
+              ]}
+              sx={{ width: '100%' }}
+              placeholder="All"
+            />
+          </Grid>
           <Grid item xs={12} md={4}>
             <Input
               label="Account Number"
@@ -139,7 +137,7 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken,
           </Grid>
           <Grid item xs={12} md={12} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="contained" onClick={onAddUser}>
-              {filterByRole ? `Add ${filterByRole}` : 'Add User'}
+              Add User
             </Button>
           </Grid>
         </Grid>
@@ -198,8 +196,6 @@ const UserTable = ({ onAddUser, onEditUser, onDeleteUser, onError, refreshToken,
                       onEdit={() => onEditUser(user)}
                       onDelete={isCurrentUser(user._id) ? null : () => onDeleteUser(user._id)}
                       disableDelete={isCurrentUser(user._id)}
-                      editIcon={editIcon}
-                      editTooltip={editTooltip}
                     />
                   </TableCell>
                 </TableRow>

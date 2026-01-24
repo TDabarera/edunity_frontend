@@ -5,7 +5,7 @@ import {
 
 // Menu Configuration: Role-based navigation items
 export const menuConfig = [
-  { text: 'My Account', icon: AccountCircle, roles: ['Admin', 'Teacher', 'Student','Parent'] },
+  { text: 'My Account', icon: AccountCircle, roles: ['Admin', 'Teacher', 'Student'] },
   { text: 'User Management', icon: People, roles: ['Admin'] },
   { text: 'Class Management', icon: Class, roles: ['Admin', 'Teacher'] },
   { text: 'Parents', icon: FamilyRestroom, roles: ['Admin', 'Teacher'] },

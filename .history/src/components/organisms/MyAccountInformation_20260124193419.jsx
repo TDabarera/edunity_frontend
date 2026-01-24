@@ -234,7 +234,7 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
           <Box component="form" onSubmit={handleSaveClick}>
             {/* Show children information for parents */}
             {form.userType && form.userType.toLowerCase() === 'parent' && (
-              <ParentChildren parentUserId={userId} />
+              <ParentChildren childrenIds={form.children} />
             )}
             
             {metaRow}

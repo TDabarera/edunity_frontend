@@ -63,6 +63,7 @@ export const GetAttendanceById = async (recordId) => {
  */
 export const GetAttendanceByClass = async (classId) => {
   try {
+    
     const url = `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE_BY_CLASS.replace(':classId', classId)}`;
     
     console.log('[DEBUG GetAttendanceByClass] Full URL:', url);
@@ -76,21 +77,7 @@ export const GetAttendanceByClass = async (classId) => {
     console.log('[DEBUG GetAttendanceByClass] Sample record classId:', response.data.attendance?.[0]?.className);
     
     return response.data; // { status, count, attendance: [] }
-  } catch (error) {
-    // If path parameter fails with 404, try query parameter approach: /attendance/all?classId=xxx
-    if (error.response?.status === 404) {
-      try {
-        console.log('[DEBUG GetAttendanceByClass] Trying fallback with query param');
-        const fallbackUrl = `${API_BASE_URL}/attendance/all?classId=${classId}`;
-        console.log('[DEBUG GetAttendanceByClass] Fallback URL:', fallbackUrl);
-        
-        const response = await axios.get(fallbackUrl, {
-          headers: getAuthHeader(),
-        });
-        
-        console.log('[DEBUG GetAttendanceByClass] Fallback response:', response.data);
-        return response.data;
-      } catch (fallbackError) {
+  } catch (error)
         throw handleApiError(fallbackError, 'Failed to fetch attendance records for class');
       }
     }
