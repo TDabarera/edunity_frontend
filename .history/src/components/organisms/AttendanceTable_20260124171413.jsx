@@ -15,6 +15,7 @@ import {
 import { Button } from '../atoms';
 import { TableHeader, AttendanceRowActions } from '../molecules';
 import { GetAttendanceRecords } from '../../services';
+import colors from '../../styles/colors';
 
 const AttendanceTable = ({ 
   onMarkAttendance, 
