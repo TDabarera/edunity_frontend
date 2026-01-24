@@ -118,7 +118,7 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
       <Paper sx={{ p: 4, elevation: 2 }}>
         {loading ? (
           <Table>
-            <TableHeader columns={classColumns} />
+            <ClassTableHeader />
             <TableBody>
               {[...Array(5)].map((_, index) => (
                 <TableRow key={index}>
@@ -145,7 +145,7 @@ const ClassTable = ({ onAddClass, onEditClass, onDeleteClass, onError, refreshTo
           </Box>
         ) : (
           <Table>
-            <TableHeader columns={classColumns} />
+            <ClassTableHeader />
             <TableBody>
               {paginatedClasses.map((cls) => (
                 <TableRow

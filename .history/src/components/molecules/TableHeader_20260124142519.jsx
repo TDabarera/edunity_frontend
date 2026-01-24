@@ -2,20 +2,23 @@ import React from 'react';
 import { TableHead, TableRow, TableCell } from '@mui/material';
 import colors from '../../styles/colors';
 
-const ClassTableHeader = () => {
-  const columns = [
-    { label: 'Class Name', align: 'left' },
-    { label: 'Level', align: 'left' },
-    { label: 'Order', align: 'left' },
-    { label: 'Year', align: 'left' },
-    { label: 'Teacher in Charge', align: 'left' },
+const TableHeader = ({ columns }) => {
+  // Default columns if none provided
+  const defaultColumns = [
+    { label: 'Name', align: 'left' },
+    { label: 'Email', align: 'left' },
+    { label: 'User Type', align: 'left' },
+    { label: 'Phone', align: 'left' },
+    { label: 'Account No', align: 'left' },
     { label: 'Actions', align: 'center' },
   ];
+
+  const tableColumns = columns || defaultColumns;
 
   return (
     <TableHead>
       <TableRow sx={{ backgroundColor: colors.primary.light }}>
-        {columns.map((column) => (
+        {tableColumns.map((column) => (
           <TableCell
             key={column.label}
             align={column.align}
@@ -36,4 +39,4 @@ const ClassTableHeader = () => {
   );
 };
 
-export default ClassTableHeader;
+export default TableHeader;
