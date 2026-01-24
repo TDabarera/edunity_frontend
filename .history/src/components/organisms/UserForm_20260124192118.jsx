@@ -99,27 +99,6 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
   };
 
-  const handleChildrenChange = (studentId) => {
-    setForm((prev) => {
-      const children = prev.children || [];
-      const isSelected = children.includes(studentId);
-      return {
-        ...prev,
-        children: isSelected
-          ? children.filter(id => id !== studentId)
-          : [...children, studentId]
-      };
-    });
-  };
-
-  // Helper to get class name from classId
-  const getClassName = (classId) => {
-    if (!classId) return 'No class';
-    const classObj = classes.find(c => c._id === classId);
-    if (!classObj) return 'No class';
-    return classObj.className || `${classObj.level || ''}${classObj.order || ''} ${classObj.year || ''}`.trim() || 'No class';
-  };
-
   const handleSaveClick = (e) => {
     e.preventDefault();
     if (!canSubmit) {
@@ -221,7 +200,7 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
 
             {/* Role / Details */}
             <Grid item xs={12} sx={{ width: '100%' }}>
-              <SelectInput label="User Type" value={form.userType} onChange={handleChange('userType')} options={userTypeOptions} required disabled={!!defaultRole} />
+              <SelectInput label="User Type" value={form.userType} onChange={handleChange('userType')} options={userTypeOptions} required />
             </Grid>
             <Grid item xs={12} sx={{ width: '100%' }}>
         <Input
@@ -236,79 +215,18 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
           fullWidth
         />
             </Grid>
-            {!hideClassField && (
-              <Grid item xs={12} sx={{ width: '100%' }}>
-                <SelectInput
-                  label="Class Name"
-                  value={form.classId}
-                  onChange={handleChange('classId')}
-                  options={(classes || []).map((cls) => ({
-                    label: cls.className || `${cls.level || ''}${cls.order || ''} ${cls.year || ''}`.trim(),
-                    value: cls._id,
-                  }))}
-                  placeholder={classes.length ? 'Select class' : 'No classes available'}
-                />
-              </Grid>
-            )}
-
-            {/* Children Selector for Parents */}
-            {showChildrenSelector && (
-              <Grid item xs={12} sx={{ width: '100%' }}>
-                <Box sx={{ border: '1px solid #ccc', borderRadius: 1, p: 2 }}>
-                  <Box sx={{ mb: 2 }}>
-                    <Input
-                      label="Search Students"
-                      placeholder="Search by name, account number, or class"
-                      onChange={(e) => {
-                        const searchTerm = e.target.value.toLowerCase();
-                        const filtered = students.filter(s => {
-                          const name = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
-                          const accountNo = (s.accountNumber || s.accountNo || '').toLowerCase();
-                          const className = getClassName(s.classId).toLowerCase();
-                          return name.includes(searchTerm) || accountNo.includes(searchTerm) || className.includes(searchTerm);
-                        });
-                        setStudents(filtered);
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ maxHeight: 300, overflow: 'auto' }}>
-                    {students.length === 0 ? (
-                      <Box sx={{ p: 2, textAlign: 'center', color: 'text.secondary' }}>
-                        No students found
-                      </Box>
-                    ) : (
-                      students.map(student => (
-                        <Box
-                          key={student._id}
-                          sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            p: 1,
-                            '&:hover': { backgroundColor: 'rgba(0,0,0,0.04)' }
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={(form.children || []).includes(student._id)}
-                            onChange={() => handleChildrenChange(student._id)}
-                            style={{ marginRight: 10 }}
-                          />
-                          <Box sx={{ flex: 1 }}>
-                            <Box>{`${student.firstName || ''} ${student.lastName || ''}`.trim()}</Box>
-                            <Box sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
-                              {student.accountNumber || student.accountNo || 'N/A'} | {getClassName(student.classId)}
-                            </Box>
-                          </Box>
-                        </Box>
-                      ))
-                    )}
-                  </Box>
-                  <Box sx={{ mt: 1, fontSize: '0.85rem', color: 'text.secondary' }}>
-                    {(form.children || []).length} student(s) selected
-                  </Box>
-                </Box>
-              </Grid>
-            )}
+            <Grid item xs={12} sx={{ width: '100%' }}>
+              <SelectInput
+                label="Class Name"
+                value={form.classId}
+                onChange={handleChange('classId')}
+                options={(classes || []).map((cls) => ({
+                  label: cls.className || `${cls.level || ''}${cls.order || ''} ${cls.year || ''}`.trim(),
+                  value: cls._id,
+                }))}
+                placeholder={classes.length ? 'Select class' : 'No classes available'}
+              />
+            </Grid>
 
             {/* Security (Create Mode Only) */}
             {!isEdit && (

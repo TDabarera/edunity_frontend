@@ -120,17 +120,3 @@ export const UpdateUserChildren = async (userId, childrenIds) => {
     throw handleApiError(error, 'Failed to update parent children');
   }
 };
-
-export const GetUserChildren = async (parentId) => {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/users/${parentId}/children`,
-      {
-        headers: getAuthHeader(),
-      }
-    );
-    return response.data; // { status, count, children: [] }
-  } catch (error) {
-    throw handleApiError(error, 'Failed to fetch parent children');
-  }
-};

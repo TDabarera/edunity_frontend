@@ -112,14 +112,6 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
     });
   };
 
-  // Helper to get class name from classId
-  const getClassName = (classId) => {
-    if (!classId) return 'No class';
-    const classObj = classes.find(c => c._id === classId);
-    if (!classObj) return 'No class';
-    return classObj.className || `${classObj.level || ''}${classObj.order || ''} ${classObj.year || ''}`.trim() || 'No class';
-  };
-
   const handleSaveClick = (e) => {
     e.preventDefault();
     if (!canSubmit) {
@@ -264,7 +256,7 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
                         const filtered = students.filter(s => {
                           const name = `${s.firstName || ''} ${s.lastName || ''}`.toLowerCase();
                           const accountNo = (s.accountNumber || s.accountNo || '').toLowerCase();
-                          const className = getClassName(s.classId).toLowerCase();
+                          const className = (s.className || '').toLowerCase();
                           return name.includes(searchTerm) || accountNo.includes(searchTerm) || className.includes(searchTerm);
                         });
                         setStudents(filtered);
@@ -296,7 +288,7 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
                           <Box sx={{ flex: 1 }}>
                             <Box>{`${student.firstName || ''} ${student.lastName || ''}`.trim()}</Box>
                             <Box sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>
-                              {student.accountNumber || student.accountNo || 'N/A'} | {getClassName(student.classId)}
+                              {student.accountNumber || student.accountNo || 'N/A'} | {student.className || 'No class'}
                             </Box>
                           </Box>
                         </Box>

@@ -55,10 +55,8 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
       setLoading(true);
       setError('');
       const res = await GetUserById(userId);
-      console.log('[MyAccountInformation] User loaded:', res);
+      //console.log('User loaded:', res);
       const data = res?.user || {};
-      console.log('[MyAccountInformation] User data:', data);
-      console.log('[MyAccountInformation] Children:', data.children);
       const nextState = {
         firstName: data.firstName || '',
         lastName: data.lastName || '',
@@ -234,7 +232,7 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
           <Box component="form" onSubmit={handleSaveClick}>
             {/* Show children information for parents */}
             {form.userType && form.userType.toLowerCase() === 'parent' && (
-              <ParentChildren parentUserId={userId} />
+              <ParentChildren childrenIds={form.children} />
             )}
             
             {metaRow}
