@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Dialog, DialogContent, Typography } from '@mui/material';
+import { Container, Dialog, DialogTitle, DialogContent } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
 import { ClassTable, Toast, Popup, ClassForm } from '../components/organisms';
 import { PageTitle } from '../components/molecules';
