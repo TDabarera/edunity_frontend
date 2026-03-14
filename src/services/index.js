@@ -3,3 +3,4 @@ export * from './authApi';
 export * from './userApi';
 export * from './ClassApi';
 export * from './AttendanceApi';
+export * from './AssignmentApi';

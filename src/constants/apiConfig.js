@@ -43,4 +43,13 @@ export const API_ENDPOINTS = {
 
   // Student endpoints
   MY_GRADES: '/student/grades',
+
+  // Assignment endpoints
+  MY_ASSIGNMENTS: '/assignments/my-assignments/assigned',
+  GET_ASSIGNMENT: '/assignments/:id',
+  SEARCH_ASSIGNMENTS: '/assignments/search/by-title',
+  GET_ALL_ASSIGNMENTS: '/assignments/all',
+  DELETE_ASSIGNMENT: '/assignments/:id',
+  CREATE_ASSIGNMENT: '/assignments/upload',
+  UPDATE_ASSIGNMENT: '/assignments/:assignmentId/edit',
 };
