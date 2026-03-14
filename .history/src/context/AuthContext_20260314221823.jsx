@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
-import { LoginUser, SignupUser, VerifyEmail, ResendVerification } from '../services';
+import { LoginUser, SignupUser } from '../services';
 
 /**
  * Authentication Context for managing user authentication state
@@ -92,26 +92,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Verify user email with verification token
-   * @param {string} token - Email verification token
-   * @returns {Promise<Object>} Verification response
-   */
-  const verifyEmail = async (token) => {
-    const response = await VerifyEmail(token);
-    return response;
-  };
-
-  /**
-   * Resend email verification
-   * @param {string} email - User email address
-   * @returns {Promise<Object>} Response from server
-   */
-  const resendVerification = async (email) => {
-    const response = await ResendVerification(email);
-    return response;
-  };
-
-  /**
    * Update user profile information
    * @param {Object} partialUser - Partial user data to update
    */
@@ -148,8 +128,6 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       signup,
-      verifyEmail,
-      resendVerification,
       updateProfile,
     }),
     [user, token, isLoggedIn, updateProfile]

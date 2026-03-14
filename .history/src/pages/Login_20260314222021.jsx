@@ -78,7 +78,7 @@ const Login = () => {
             justifyContent: 'center',
             alignItems: 'center',
             height: '100%',
-            backgroundImage:"url('/Posters/LoginCover.jpg')",
+            backgroundImage:"url('/Posters/Gradient.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             color: 'white',

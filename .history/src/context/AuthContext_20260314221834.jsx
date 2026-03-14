@@ -148,8 +148,6 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       signup,
-      verifyEmail,
-      resendVerification,
       updateProfile,
     }),
     [user, token, isLoggedIn, updateProfile]
