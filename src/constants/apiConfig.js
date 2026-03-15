@@ -4,7 +4,7 @@ export const API_URL = API_BASE_URL;
 export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: '/login',
-  SIGNUP: '/users/createuser',
+  SIGNUP: '/users/signup',
   VERIFY_EMAIL: '/verify-email',
   RESEND_VERIFICATION: '/resend-verification',
   LOGOUT: '/logout',
@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   // Admin endpoints
   USER_MANAGEMENT: '/admin/users',
   GET_USERS: '/users',
+  GET_PENDING_USERS: '/users/pending',
   CREATE_USER: '/users/createuser',
   UPDATE_USER_ADMIN: '/users/:id',
   DELETE_USER: '/users/:id',
@@ -49,6 +50,7 @@ export const API_ENDPOINTS = {
 
   // Assignment endpoints
   MY_ASSIGNMENTS: '/assignments/my-assignments/assigned',
+  UPLOADED_ASSIGNMENTS: '/assignments/uploaded-by-me',
   GET_ASSIGNMENT: '/assignments/:id',
   SEARCH_ASSIGNMENTS: '/assignments/search/by-title',
   GET_ALL_ASSIGNMENTS: '/assignments/all',
@@ -61,6 +63,14 @@ export const API_ENDPOINTS = {
   SUBMIT_ASSIGNMENT: '/submissions/:id/submit',
   EDIT_SUBMISSION: '/submissions/:id/edit-submission',
   MY_SUBMISSIONS: '/submissions/my-submissions',
+  GET_ASSIGNMENT_SUBMISSIONS: '/submissions/:assignmentId/submissions',
   DELETE_SUBMISSION: '/submissions/:submissionId',
   GET_SUBMISSION_PDF: '/submissions/:assignmentId/submission/:submissionId/pdf',
+
+  // Notification endpoints
+  GET_NOTIFICATIONS: '/notifications',
+  MY_NOTIFICATIONS: '/notifications/my-notifications',
+  GET_NOTIFICATION_BY_ID: '/notifications/:notificationId',
+  GET_MY_NOTIFICATION_BY_ID: '/notifications/my-notifications/:notificationId',
+  RESEND_NOTIFICATION: '/notifications/:notificationId/resend',
 };

@@ -1,6 +1,33 @@
 import { API_ENDPOINTS } from '../constants';
 import api from './apiClient';
 
+const normalizeUserType = (userType) => {
+  const normalized = String(userType || '').trim().toLowerCase();
+  if (!normalized) return '';
+  return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
+};
+
+const buildSignupPayload = (userData = {}) => {
+  const payload = {
+    firstName: String(userData.firstName || '').trim(),
+    lastName: String(userData.lastName || '').trim(),
+    userType: normalizeUserType(userData.userType),
+    email: String(userData.email || '').trim(),
+    password: userData.password,
+  };
+
+  const phone = String(userData.phone || '').trim();
+  const address = String(userData.address || '').trim();
+  const classId = String(userData.classId || '').trim();
+
+  if (phone) payload.phone = phone;
+  if (userData.dob) payload.dob = userData.dob;
+  if (address) payload.address = address;
+  if (classId) payload.classId = classId;
+
+  return payload;
+};
+
 export const LoginUser = async (email, password) => {
   try {
     const response = await api.post(API_ENDPOINTS.LOGIN, {
@@ -19,7 +46,7 @@ export const LoginUser = async (email, password) => {
 
 export const SignupUser = async (userData) => {
   try {
-    const response = await api.post(API_ENDPOINTS.SIGNUP, userData);
+    const response = await api.post(API_ENDPOINTS.SIGNUP, buildSignupPayload(userData));
     return response.data; // { message: 'Verification email sent' }
   } catch (error) {
     const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Signup failed';

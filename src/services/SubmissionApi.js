@@ -84,6 +84,24 @@ export const GetMySubmissions = async () => {
   }
 };
 
+export const GetSubmissionsByAssignmentId = async (assignmentId) => {
+  if (!assignmentId) {
+    throw new Error('Assignment ID is required to fetch submissions');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}${API_ENDPOINTS.GET_ASSIGNMENT_SUBMISSIONS}`.replace(':assignmentId', assignmentId),
+      {
+        headers: getAuthHeader(),
+      }
+    );
+    return response.data; // { success: true, count, submissions: [] }
+  } catch (error) {
+    throw handleApiError(error, 'Failed to fetch assignment submissions');
+  }
+};
+
 export const DeleteSubmissionById = async (submissionId) => {
   try {
     const response = await axios.delete(
@@ -113,4 +131,8 @@ export const GetSubmissionPdfUrl = async (assignmentId, submissionId) => {
   } catch (error) {
     throw handleApiError(error, 'Failed to fetch submission PDF');
   }
+};
+
+export const ResolveSubmissionFileUrl = (fileUrl) => {
+  return resolveFileUrl(fileUrl);
 };

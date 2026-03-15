@@ -44,20 +44,35 @@ const DueAssignments = ({ onAssignmentClick }) => {
     try {
       setLoading(true);
       setError(null);
-      const [data, classesResponse] = await Promise.all([GetMyAssignments(), GetAllClasses()]);
+      const [assignmentsResult, classesResult] = await Promise.allSettled([
+        GetMyAssignments(),
+        GetAllClasses(),
+      ]);
 
-      const classList = Array.isArray(classesResponse?.data)
-        ? classesResponse.data
-        : Array.isArray(classesResponse?.classes)
-          ? classesResponse.classes
-          : Array.isArray(classesResponse?.data?.data)
-            ? classesResponse.data.data
-            : Array.isArray(classesResponse?.data?.classes)
-              ? classesResponse.data.classes
-              : [];
+      if (assignmentsResult.status === 'rejected') {
+        throw assignmentsResult.reason;
+      }
 
-      setClassNameLookup(buildClassLookup(classList));
-      setAssignments(data.assignments || []);
+      const assignmentsResponse = assignmentsResult.value;
+      setAssignments(assignmentsResponse?.assignments || []);
+
+      if (classesResult.status === 'fulfilled') {
+        const classesResponse = classesResult.value;
+        const classList = Array.isArray(classesResponse?.data)
+          ? classesResponse.data
+          : Array.isArray(classesResponse?.classes)
+            ? classesResponse.classes
+            : Array.isArray(classesResponse?.data?.data)
+              ? classesResponse.data.data
+              : Array.isArray(classesResponse?.data?.classes)
+                ? classesResponse.data.classes
+                : [];
+
+        setClassNameLookup(buildClassLookup(classList));
+      } else {
+        setClassNameLookup({});
+        console.warn('Unable to fetch class metadata for due assignments:', classesResult.reason);
+      }
     } catch (err) {
       setError(err.message || 'Failed to fetch assignments');
       console.error('Error fetching assignments:', err);
@@ -95,7 +110,7 @@ const DueAssignments = ({ onAssignmentClick }) => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, border: `1px solid ${colors.primary.grey}`, borderRadius: 2 }}>
       <Typography
         variant="h5"
         sx={{

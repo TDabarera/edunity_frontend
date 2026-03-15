@@ -1,9 +1,18 @@
 import React from 'react';
 import { Card, CardContent, Box, Typography, Avatar, IconButton, Tooltip, Chip } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon } from '@mui/icons-material';
 import colors from '../../styles/colors';
 
-const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = false, classNameLookup = {} })=> {
+const AssignmentCard = ({
+  assignment,
+  onClick,
+  onEdit,
+  onDelete,
+  showActions = false,
+  showViewSubmissionsAction = false,
+  onViewSubmissions,
+  classNameLookup = {},
+})=> {
   const { title, deadline, uploadedBy, submissionStatus, isSubmitted, assignedToClasses } = assignment;
 
   // Format deadline date
@@ -151,8 +160,28 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
           </Box>
         )}
 
-        {showActions && (onEdit || onDelete) && (
+        {(showViewSubmissionsAction || (showActions && (onEdit || onDelete))) && (
           <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+            {showViewSubmissionsAction && onViewSubmissions && (
+              <Tooltip title="Manage Submissions">
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onViewSubmissions(assignment);
+                  }}
+                  sx={{
+                    color: colors.primary.dark,
+                    '&:hover': {
+                      backgroundColor: colors.primary.grey,
+                      color: colors.primary.contrastText,
+                    },
+                  }}
+                >
+                  <VisibilityIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
             {onEdit && (
               <Tooltip title="Edit">
                 <IconButton

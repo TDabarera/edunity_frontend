@@ -9,6 +9,7 @@ import ClassManagement from './pages/ClassManagement.jsx';
 import Attendance from './pages/Attendance.jsx';
 import ParentManagement from './pages/ParentManagement.jsx';
 import Assignments from './pages/Assignments.jsx';
+import NotificationsPage from './pages/Notifications.jsx';
 // import Playground from './pages/Playground'; // Temporarily commented out per request
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/attendance" element={<Attendance />} />
         <Route path="/parent-management" element={<ParentManagement />} />
         <Route path="/assignments" element={<Assignments />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         {/* <Route path="/playground" element={<Playground />} /> */}
       </Routes>
     </BrowserRouter>

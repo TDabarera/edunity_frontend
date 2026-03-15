@@ -5,3 +5,4 @@ export * from './ClassApi';
 export * from './AttendanceApi';
 export * from './AssignmentApi';
 export * from './SubmissionApi';
+export * from './NotificationApi';
