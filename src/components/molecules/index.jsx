@@ -10,6 +10,8 @@ import ParentChildren from './ParentChildren.jsx';
 import AssignmentCard from './AssignmentCard.jsx';
 import SubmissionCard from './SubmissionCard.jsx';
 import SubmissionActionRow from './SubmissionActionRow.jsx';
+import NotificationLog from './NotificationLog.jsx';
+import NotificationBody from './NotificationBody.jsx';
 
 export {
     BrandingHeader,
@@ -23,5 +25,7 @@ export {
     ParentChildren,
     AssignmentCard,
     SubmissionCard,
-    SubmissionActionRow
+    SubmissionActionRow,
+    NotificationLog,
+    NotificationBody
 };
