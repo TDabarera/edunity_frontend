@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { API_BASE_URL, API_ENDPOINTS } from '../constants';
+import { API_URL, API_ENDPOINTS } from '../constants';
+import api from './apiClient';
 
 const getAuthToken = () => {
   return localStorage.getItem('edunity_token');
@@ -20,7 +20,7 @@ const handleApiError = (error, defaultMessage) => {
 
 export const GetUsers = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_USERS}`, {
+    const response = await api.get(API_ENDPOINTS.GET_USERS, {
       headers: getAuthHeader(),
     });
     return response.data; // { users: [] }
@@ -33,13 +33,12 @@ export const GetAllUsers = GetUsers;
 
 export const CreateUser = async (userData) => {
   try {
-    const url = `${API_BASE_URL}${API_ENDPOINTS.CREATE_USER}`;
-    const response = await axios.post(url, userData, {
+    const response = await api.post(API_ENDPOINTS.CREATE_USER, userData, {
       headers: getAuthHeader(),
     });
     return response.data;
   } catch (error) {
-    console.error('[UserApi] CreateUser error URL:', `${API_BASE_URL}${API_ENDPOINTS.CREATE_USER}`);
+    console.error('[UserApi] CreateUser error URL:', `${API_URL}${API_ENDPOINTS.CREATE_USER}`);
     throw handleApiError(error, 'Failed to create user');
   }
 };
@@ -47,9 +46,8 @@ export const CreateUser = async (userData) => {
 export const UpdateUser = async (userId, userData) => {
   try {
     const endpoint = API_ENDPOINTS.UPDATE_USER_ADMIN.replace(':id', userId);
-    const url = `${API_BASE_URL}${endpoint}`;
-    const response = await axios.put(
-      url,
+    const response = await api.put(
+      endpoint,
       userData,
       {
         headers: getAuthHeader(),
@@ -58,15 +56,15 @@ export const UpdateUser = async (userId, userData) => {
     return response.data;
   } catch (error) {
     const endpoint = API_ENDPOINTS.UPDATE_USER_ADMIN.replace(':id', userId);
-    console.error('[UserApi] UpdateUser error URL:', `${API_BASE_URL}${endpoint}`);
+    console.error('[UserApi] UpdateUser error URL:', `${API_URL}${endpoint}`);
     throw handleApiError(error, 'Failed to update user');
   }
 };
 
 export const GetUserById = async (userId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}${API_ENDPOINTS.GET_USER_BY_ID.replace(':id', userId)}`,
+    const response = await api.get(
+      API_ENDPOINTS.GET_USER_BY_ID.replace(':id', userId),
       {
         headers: getAuthHeader(),
       }
@@ -79,8 +77,8 @@ export const GetUserById = async (userId) => {
 
 export const UpdateUserById = async (userId, userData) => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}${API_ENDPOINTS.UPDATE_USER_BY_ID.replace(':id', userId)}`,
+    const response = await api.put(
+      API_ENDPOINTS.UPDATE_USER_BY_ID.replace(':id', userId),
       userData,
       {
         headers: getAuthHeader(),
@@ -94,8 +92,8 @@ export const UpdateUserById = async (userId, userData) => {
 
 export const DeleteUser = async (userId) => {
   try {
-    const response = await axios.delete(
-      `${API_BASE_URL}${API_ENDPOINTS.DELETE_USER.replace(':id', userId)}`,
+    const response = await api.delete(
+      API_ENDPOINTS.DELETE_USER.replace(':id', userId),
       {
         headers: getAuthHeader(),
       }
@@ -108,8 +106,8 @@ export const DeleteUser = async (userId) => {
 
 export const UpdateUserChildren = async (userId, childrenIds) => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}/users/${userId}/children`,
+    const response = await api.put(
+      `/users/${userId}/children`,
       { children: childrenIds },
       {
         headers: getAuthHeader(),
@@ -123,8 +121,8 @@ export const UpdateUserChildren = async (userId, childrenIds) => {
 
 export const GetUserChildren = async (parentId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/users/${parentId}/children`,
+    const response = await api.get(
+      `/users/${parentId}/children`,
       {
         headers: getAuthHeader(),
       }

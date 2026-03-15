@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { AssignmentCard } from '../molecules';
-import { GetMyAssignments, GetAssignmentById, GetAllClasses } from '../../services';
+import { GetMyAssignments, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
 import colors from '../../styles/colors';
+import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
 
 const getClassName = (classItem) => {
   if (!classItem) return '';
@@ -67,13 +68,14 @@ const DueAssignments = ({ onAssignmentClick }) => {
 
   const handleCardClick = async (assignment) => {
     try {
-      const assignmentData = await GetAssignmentById(assignment._id);
+      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+
       if (onAssignmentClick) {
-        onAssignmentClick(assignmentData);
+        onAssignmentClick(assignment);
       }
     } catch (err) {
-      console.error('Error fetching assignment details:', err);
-      setError('Failed to load assignment details');
+      console.error('Error opening assignment PDF:', err);
+      setError(err.message || 'Failed to open assignment PDF');
     }
   };
 

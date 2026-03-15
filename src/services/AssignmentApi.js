@@ -18,6 +18,15 @@ const handleApiError = (error, defaultMessage) => {
   return err;
 };
 
+const resolveFileUrl = (fileUrl) => {
+  if (!fileUrl) {
+    throw new Error('Assignment PDF URL was not provided by the server');
+  }
+
+  const apiOrigin = new URL(API_BASE_URL, window.location.origin).origin;
+  return new URL(fileUrl, `${apiOrigin}/`).toString();
+};
+
 export const GetMyAssignments = async () => {
   try {
     const response = await axios.get(
@@ -88,6 +97,21 @@ export const DeleteAssignment = async (assignmentId) => {
     return response.data; // { success: true, message: 'Assignment deleted successfully!' }
   } catch (error) {
     throw handleApiError(error, 'Failed to delete assignment');
+  }
+};
+
+export const GetAssignmentPdfUrl = async (assignmentId) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}${API_ENDPOINTS.GET_ASSIGNMENT_PDF}`.replace(':assignmentId', assignmentId),
+      {
+        headers: getAuthHeader(),
+      }
+    );
+
+    return resolveFileUrl(response.data?.fileUrl);
+  } catch (error) {
+    throw handleApiError(error, 'Failed to fetch assignment PDF');
   }
 };
 

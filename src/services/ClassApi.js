@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { API_BASE_URL, API_ENDPOINTS } from '../constants';
+import { API_ENDPOINTS } from '../constants';
+import api from './apiClient';
 
 const getAuthToken = () => {
   return localStorage.getItem('edunity_token');
@@ -20,7 +20,7 @@ const handleApiError = (error, defaultMessage) => {
 
 export const GetAllClasses = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}${API_ENDPOINTS.GET_ALL_CLASSES}`, {
+    const response = await api.get(API_ENDPOINTS.GET_ALL_CLASSES, {
       headers: getAuthHeader(),
     });
     return response.data; // { status, data: [] }
@@ -31,8 +31,8 @@ export const GetAllClasses = async () => {
 
 export const GetClassById = async (classId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}${API_ENDPOINTS.GET_CLASS_BY_ID.replace(':id', classId)}`,
+    const response = await api.get(
+      API_ENDPOINTS.GET_CLASS_BY_ID.replace(':id', classId),
       {
         headers: getAuthHeader(),
       }
@@ -45,8 +45,8 @@ export const GetClassById = async (classId) => {
 
 export const CreateClass = async (classData) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}${API_ENDPOINTS.CREATE_CLASS}`,
+    const response = await api.post(
+      API_ENDPOINTS.CREATE_CLASS,
       classData,
       {
         headers: getAuthHeader(),
@@ -60,8 +60,8 @@ export const CreateClass = async (classData) => {
 
 export const UpdateClass = async (classId, classData) => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}${API_ENDPOINTS.UPDATE_CLASS.replace(':id', classId)}`,
+    const response = await api.put(
+      API_ENDPOINTS.UPDATE_CLASS.replace(':id', classId),
       classData,
       {
         headers: getAuthHeader(),
@@ -75,8 +75,8 @@ export const UpdateClass = async (classId, classData) => {
 
 export const DeleteClass = async (classId) => {
   try {
-    const response = await axios.delete(
-      `${API_BASE_URL}${API_ENDPOINTS.DELETE_CLASS.replace(':id', classId)}`,
+    const response = await api.delete(
+      API_ENDPOINTS.DELETE_CLASS.replace(':id', classId),
       {
         headers: getAuthHeader(),
       }

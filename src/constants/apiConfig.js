@@ -50,6 +50,14 @@ export const API_ENDPOINTS = {
   SEARCH_ASSIGNMENTS: '/assignments/search/by-title',
   GET_ALL_ASSIGNMENTS: '/assignments/all',
   DELETE_ASSIGNMENT: '/assignments/:id',
+  GET_ASSIGNMENT_PDF: '/assignments/:assignmentId/pdf',
   CREATE_ASSIGNMENT: '/assignments/upload',
   UPDATE_ASSIGNMENT: '/assignments/:assignmentId/edit',
+
+  // Submission endpoints
+  SUBMIT_ASSIGNMENT: '/submissions/:id/submit',
+  EDIT_SUBMISSION: '/submissions/:id/edit-submission',
+  MY_SUBMISSIONS: '/submissions/my-submissions',
+  DELETE_SUBMISSION: '/submissions/:submissionId',
+  GET_SUBMISSION_PDF: '/submissions/:assignmentId/submission/:submissionId/pdf',
 };

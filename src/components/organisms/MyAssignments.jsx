@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { Button } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { GetAllAssignments, DeleteAssignment, GetAllClasses } from '../../services';
+import { GetAllAssignments, DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
 import { useToast } from './useToast';
 import Popup from './Popup';
 import UploadOrEditAssignment from './UploadOrEditAssignment';
 import colors from '../../styles/colors';
+import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
 
 const getClassName = (classItem) => {
   if (!classItem) return '';
@@ -97,6 +98,16 @@ const MyAssignments = ({ onEdit }) => {
   const handleDeleteClick = (assignment) => {
     setSelectedAssignment(assignment);
     setDeleteConfirmOpen(true);
+  };
+
+  const handleCardClick = async (assignment) => {
+    try {
+      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+    } catch (err) {
+      const errorMessage = err.message || 'Failed to open assignment PDF';
+      showToast(errorMessage, 'error');
+      console.error('Error opening assignment PDF:', err);
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -205,6 +216,7 @@ const MyAssignments = ({ onEdit }) => {
                   <AssignmentCard
                     assignment={assignment}
                     classNameLookup={classNameLookup}
+                    onClick={() => handleCardClick(assignment)}
                     showActions={true}
                     onEdit={() => handleEdit(assignment)}
                     onDelete={() => handleDeleteClick(assignment)}

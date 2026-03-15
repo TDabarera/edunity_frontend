@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { SearchBar } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { SearchAssignmentsByTitle, GetAssignmentById, GetAllClasses } from '../../services';
+import { SearchAssignmentsByTitle, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
 import colors from '../../styles/colors';
+import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
 
 const getClassName = (classItem) => {
   if (!classItem) return '';
@@ -88,13 +89,14 @@ const SearchAssignment = ({ onAssignmentClick }) => {
 
   const handleCardClick = async (assignment) => {
     try {
-      const assignmentData = await GetAssignmentById(assignment._id);
+      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+
       if (onAssignmentClick) {
-        onAssignmentClick(assignmentData);
+        onAssignmentClick(assignment);
       }
     } catch (err) {
-      console.error('Error fetching assignment details:', err);
-      setError('Failed to load assignment details');
+      console.error('Error opening assignment PDF:', err);
+      setError(err.message || 'Failed to open assignment PDF');
     }
   };
 
@@ -178,22 +180,6 @@ const SearchAssignment = ({ onAssignmentClick }) => {
             ))}
           </Grid>
         </>
-      )}
-
-      {!loading && !hasSearched && (
-        <Box
-          sx={{
-            textAlign: 'center',
-            py: 5,
-            backgroundColor: colors.primary.greyLight,
-            borderRadius: 2,
-            border: `1px solid ${colors.primary.grey}`,
-          }}
-        >
-          <Typography variant="body1" sx={{ color: colors.text.secondary }}>
-            Enter a search term to find assignments.
-          </Typography>
-        </Box>
       )}
     </Box>
   );

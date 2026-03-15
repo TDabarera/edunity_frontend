@@ -18,6 +18,8 @@ import DueAssignments from './DueAssignments.jsx';
 import SearchAssignment from './SearchAssignment.jsx';
 import MyAssignments from './MyAssignments.jsx';
 import UploadOrEditAssignment from './UploadOrEditAssignment.jsx';
+import SubmitorEditAssignment from './SubmitorEditAssignment.jsx';
+import MySubmissions from './MySubmissions.jsx';
 
 export {
     Header,
@@ -39,7 +41,10 @@ export {
     DueAssignments,
     SearchAssignment,
     MyAssignments,
-    UploadOrEditAssignment
+    UploadOrEditAssignment,
+    SubmitorEditAssignment,
+    SubmitorEditAssignment as SubmitorEditAsignment,
+    MySubmissions
 };
 
 

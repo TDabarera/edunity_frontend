@@ -8,6 +8,7 @@ import AttendanceRowActions from './AttendanceRowActions.jsx';
 import SelectClass from './SelectClass.jsx';
 import ParentChildren from './ParentChildren.jsx';
 import AssignmentCard from './AssignmentCard.jsx';
+import SubmissionCard from './SubmissionCard.jsx';
 
 export {
     BrandingHeader,
@@ -19,5 +20,6 @@ export {
     AttendanceRowActions,
     SelectClass,
     ParentChildren,
-    AssignmentCard
+    AssignmentCard,
+    SubmissionCard
 };

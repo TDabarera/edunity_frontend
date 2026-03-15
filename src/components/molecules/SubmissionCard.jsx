@@ -1,32 +1,50 @@
 import React from 'react';
-import { Card, CardContent, Box, Typography, Avatar, IconButton, Tooltip, Chip } from '@mui/material';
+import { Card, CardContent, Box, Typography, Chip, IconButton, Tooltip } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import colors from '../../styles/colors';
 
-const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = false, classNameLookup = {} })=> {
-  const { title, deadline, uploadedBy, submissionStatus, isSubmitted, assignedToClasses } = assignment;
+const SubmissionCard = ({ submission, classNameLookup = {}, showActions = false, onEdit, onDelete, onClick }) => {
+  const assignment = submission?.assignmentId || {};
+  const assignmentTitle = assignment?.title ? String(assignment.title).replace(/"/g, '') : 'Untitled Assignment';
 
-  // Format deadline date
-  const deadlineDate = new Date(deadline);
-  const formattedDeadline = deadlineDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const deadlineDate = assignment?.deadline ? new Date(assignment.deadline) : null;
+  const submittedAtDate = submission?.submittedAt ? new Date(submission.submittedAt) : null;
+  const lastEditedDate = submission?.lastEditedAt ? new Date(submission.lastEditedAt) : null;
 
-  // Determine chip color based on submission status
+  const formattedDeadline = deadlineDate
+    ? deadlineDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'N/A';
+
+  const formattedSubmittedAt = submittedAtDate
+    ? submittedAtDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'N/A';
+
+  const formattedLastEdited = lastEditedDate
+    ? lastEditedDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : 'Never';
+
   const getStatusChipColor = () => {
-    if (submissionStatus === 'On Time') return 'success';
-    if (submissionStatus === 'Late') return 'error';
-    if (submissionStatus === 'Not Submitted') return 'warning';
+    if (submission?.status === 'On Time') return 'success';
+    if (submission?.status === 'Late') return 'warning';
     return 'default';
-  };
-
-  // Get initials for avatar
-  const getInitials = (firstName, lastName) => {
-    return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
 
   const getClassDisplayName = (assignedClass) => {
@@ -46,12 +64,12 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
       sx={{
         cursor: onClick ? 'pointer' : 'default',
         transition: 'all 0.3s ease',
+        backgroundColor: colors.primary.greyLight,
+        border: `1px solid ${colors.primary.grey}`,
         '&:hover': {
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
           transform: 'translateY(-4px)',
         },
-        backgroundColor: colors.primary.greyLight,
-        border: `1px solid ${colors.primary.grey}`,
       }}
     >
       <CardContent sx={{ pb: 2 }}>
@@ -67,74 +85,45 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
               whiteSpace: 'nowrap',
             }}
           >
-            {title?.replace(/"/g, '')}
+            {assignmentTitle}
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              color: colors.primary.main,
-              fontWeight: 600,
-              mb: 1,
-            }}
-          >
+          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 0.5 }}>
             Deadline: {formattedDeadline}
           </Typography>
+          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 0.5 }}>
+            Submitted At: {formattedSubmittedAt}
+          </Typography>
+          <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+            Last Edited: {formattedLastEdited}
+          </Typography>
         </Box>
 
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-          <Avatar
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', alignItems: 'center', mb: 2 }}>
+          <Chip
+            label={submission?.status || 'Unknown'}
+            color={getStatusChipColor()}
+            size="small"
+            variant="outlined"
+          />
+          <Chip
+            label={submission?.isSubmitted ? 'Submitted' : 'Pending'}
+            size="small"
+            variant="filled"
             sx={{
-              width: 32,
-              height: 32,
-              backgroundColor: colors.primary.main,
               color: colors.primary.contrastText,
-              fontSize: '0.875rem',
+              backgroundColor: submission?.isSubmitted ? colors.success.main : colors.warning.main,
+              fontWeight: 600,
             }}
-          >
-            {getInitials(uploadedBy?.firstName, uploadedBy?.lastName)}
-          </Avatar>
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="caption" sx={{ fontWeight: 600 }}>
-              {uploadedBy?.firstName} {uploadedBy?.lastName}
-            </Typography>
-            <Typography variant="caption" sx={{ color: colors.text.secondary, display: 'block' }}>
-              {uploadedBy?.email}
-            </Typography>
-          </Box>
+          />
         </Box>
 
-        {(submissionStatus || isSubmitted !== undefined) && (
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', alignItems: 'center', mb: 2 }}>
-            {submissionStatus && (
-              <Chip
-                label={submissionStatus}
-                color={getStatusChipColor()}
-                size="small"
-                variant="outlined"
-              />
-            )}
-            {isSubmitted !== undefined && (
-              <Chip
-                label={isSubmitted ? 'Submitted' : 'Pending'}
-                size="small"
-                variant="filled"
-                sx={{
-                  color: colors.primary.contrastText,
-                  backgroundColor: isSubmitted ? colors.success.main : colors.warning.main,
-                  fontWeight: 600,
-                }}
-              />
-            )}
-          </Box>
-        )}
-
-        {assignedToClasses && assignedToClasses.length > 0 && (
-          <Box sx={{ mb: 2, textAlign: 'center' }}>
+        {assignment?.assignedToClasses && assignment.assignedToClasses.length > 0 && (
+          <Box sx={{ textAlign: 'center' }}>
             <Typography variant="caption" sx={{ fontWeight: 600, color: colors.text.secondary, display: 'block', mb: 1 }}>
               Assigned To:
             </Typography>
             <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap' }}>
-              {assignedToClasses.map((assignedClass, index) => (
+              {assignment.assignedToClasses.map((assignedClass, index) => (
                 <Chip
                   key={index}
                   label={getClassDisplayName(assignedClass)}
@@ -152,14 +141,14 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
         )}
 
         {showActions && (onEdit || onDelete) && (
-          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mt: 2 }}>
             {onEdit && (
-              <Tooltip title="Edit">
+              <Tooltip title="Edit Submission">
                 <IconButton
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onEdit(assignment);
+                    onEdit(submission);
                   }}
                   sx={{
                     color: colors.primary.light,
@@ -173,13 +162,14 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
                 </IconButton>
               </Tooltip>
             )}
+
             {onDelete && (
-              <Tooltip title="Delete">
+              <Tooltip title="Delete Submission">
                 <IconButton
                   size="small"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDelete(assignment);
+                    onDelete(submission);
                   }}
                   sx={{
                     color: colors.primary.main,
@@ -200,4 +190,4 @@ const AssignmentCard = ({ assignment, onClick, onEdit, onDelete, showActions = f
   );
 };
 
-export default AssignmentCard;
+export default SubmissionCard;
