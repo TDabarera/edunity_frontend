@@ -40,6 +40,7 @@ export const API_ENDPOINTS = {
 
   // Class endpoints
   GET_ALL_CLASSES: '/class',
+  GET_MY_CLASSES_BY_USER_ID: '/class/myclass/:userid',
   CREATE_CLASS: '/class',
   GET_CLASS_BY_ID: '/class/:id',
   UPDATE_CLASS: '/class/:id',
@@ -73,4 +74,9 @@ export const API_ENDPOINTS = {
   GET_NOTIFICATION_BY_ID: '/notifications/:notificationId',
   GET_MY_NOTIFICATION_BY_ID: '/notifications/my-notifications/:notificationId',
   RESEND_NOTIFICATION: '/notifications/:notificationId/resend',
+
+  // Reports endpoints
+  GET_MY_CHILDREN_ATTENDANCE_STATUS: '/reports/parent/my-children-attendance',
+  GET_TEACHER_ASSIGNMENT_SUMMARY: '/reports/teacher/my-assignments-summary',
+  GET_SIMPLE_DASHBOARD_REPORT: '/reports/dashboard-simple',
 };

@@ -4,7 +4,7 @@ import {
   ListItemText, Divider, IconButton, Box 
 } from '@mui/material';
 import {
-  ChevronLeft, Menu, Home
+  ChevronLeft, Menu, Dashboard
 } from '@mui/icons-material';
 import { menuConfig } from '../../constants';
 import colors from '../../styles/colors';
@@ -17,7 +17,7 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
   
   // Map menu text to routes
   const menuRoutes = {
-    'Home': '/',
+    'Dashboard': '/',
     'My Account': '/my-account',
     'User Management': '/user-management',
     'Class Management': '/class-management',
@@ -56,7 +56,7 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
       </Box>
       <Divider sx={{ backgroundColor: 'rgba(255,255,255,0.2)' }} />
       <List>
-        {/* Home Link - Always visible */}
+        {/* Dashboard Link - Always visible */}
         <ListItem disablePadding sx={{ display: 'block' }}>
           <ListItemButton
             onClick={() => {
@@ -81,7 +81,7 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
               color: 'white',
               fontSize: 32,
             }}>
-              <Home sx={{ fontSize: 32 }} />
+              <Dashboard sx={{ fontSize: 32 }} />
             </ListItemIcon>
             <Box
               sx={{
@@ -91,7 +91,7 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
               }}
             >
               <ListItemText 
-                primary="Home" 
+                primary="Dashboard" 
                 sx={{ 
                   color: 'white',
                   opacity: open ? 1 : 0,

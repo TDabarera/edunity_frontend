@@ -24,6 +24,7 @@ import ManageSubmissons from './ManageSubmissons.jsx';
 import NotificationLogs from './NotificationLogs.jsx';
 import Notifications from './Notifications.jsx';
 import PendingUsers from './PendingUsers.jsx';
+import DashboardOverview from './DashboardOverview.jsx';
 
 export {
     Header,
@@ -52,7 +53,8 @@ export {
     ManageSubmissons,
     NotificationLogs,
     Notifications,
-    PendingUsers
+    PendingUsers,
+    DashboardOverview
 };
 
 
