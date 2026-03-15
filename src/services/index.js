@@ -1,6 +1,6 @@
 // Central services export file
-export * from './authApi';
-export * from './userApi';
+export * from './AuthApi';
+export * from './UserApi';
 export * from './ClassApi';
 export * from './AttendanceApi';
 export * from './AssignmentApi';
