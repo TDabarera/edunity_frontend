@@ -5,9 +5,12 @@ import { AssignmentCard } from '../molecules';
 import { GetAllAssignments, DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
 import { useToast } from './useToast';
 import Popup from './Popup';
+import ManageSubmissons from './ManageSubmissons';
 import UploadOrEditAssignment from './UploadOrEditAssignment';
 import colors from '../../styles/colors';
 import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
+import { useAuth } from '../../context/AuthContext';
+import { decodeJWT } from '../../utils/jwtUtils';
 
 const getClassName = (classItem) => {
   if (!classItem) return '';
@@ -35,16 +38,30 @@ const buildClassLookup = (classList = []) => {
 };
 
 const MyAssignments = ({ onEdit }) => {
+  const { user } = useAuth();
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [classNameLookup, setClassNameLookup] = useState({});
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedAssignmentForSubmissions, setSelectedAssignmentForSubmissions] = useState(null);
   const [uploadAssignmentOpen, setUploadAssignmentOpen] = useState(false);
   const [editAssignmentOpen, setEditAssignmentOpen] = useState(false);
   const [editAssignmentData, setEditAssignmentData] = useState(null);
   const { showToast, Toast: ToastComponent } = useToast();
+  const token = localStorage.getItem('edunity_token');
+  const decodedToken = token ? decodeJWT(token) : null;
+  const tokenRole = String(
+    decodedToken?.role ||
+    decodedToken?.userType ||
+    decodedToken?.user?.role ||
+    decodedToken?.user?.userType ||
+    ''
+  ).toLowerCase();
+  const fallbackRole = String(user?.role || '').toLowerCase();
+  const normalizedRole = tokenRole || fallbackRole;
+  const canManageSubmissions = normalizedRole === 'teacher' || normalizedRole === 'admin';
 
   const fetchAssignments = useCallback(async () => {
     try {
@@ -79,6 +96,8 @@ const MyAssignments = ({ onEdit }) => {
   }, [fetchAssignments]);
 
   const handleEdit = (assignment) => {
+    setSelectedAssignmentForSubmissions(null);
+
     if (onEdit) {
       onEdit(assignment);
       return;
@@ -90,9 +109,18 @@ const MyAssignments = ({ onEdit }) => {
   };
 
   const handleUploadClick = () => {
+    setSelectedAssignmentForSubmissions(null);
     setEditAssignmentOpen(false);
     setEditAssignmentData(null);
     setUploadAssignmentOpen(true);
+  };
+
+  const handleOpenManageSubmissions = (assignment) => {
+    setSelectedAssignmentForSubmissions(assignment);
+  };
+
+  const handleCloseManageSubmissions = () => {
+    setSelectedAssignmentForSubmissions(null);
   };
 
   const handleDeleteClick = (assignment) => {
@@ -163,7 +191,7 @@ const MyAssignments = ({ onEdit }) => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, border: `1px solid ${colors.primary.grey}`, borderRadius: 2 }}>
       {showAssignmentForm ? (
         <UploadOrEditAssignment
           mode={uploadAssignmentOpen ? 'upload' : 'edit'}
@@ -188,6 +216,15 @@ const MyAssignments = ({ onEdit }) => {
               Upload Assignment
             </Button>
           </Box>
+
+          {selectedAssignmentForSubmissions && (
+            <Box sx={{ mb: 3 }}>
+              <ManageSubmissons
+                assignment={selectedAssignmentForSubmissions}
+                onClose={handleCloseManageSubmissions}
+              />
+            </Box>
+          )}
 
           {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
@@ -218,6 +255,8 @@ const MyAssignments = ({ onEdit }) => {
                     classNameLookup={classNameLookup}
                     onClick={() => handleCardClick(assignment)}
                     showActions={true}
+                    showViewSubmissionsAction={canManageSubmissions}
+                    onViewSubmissions={canManageSubmissions ? () => handleOpenManageSubmissions(assignment) : undefined}
                     onEdit={() => handleEdit(assignment)}
                     onDelete={() => handleDeleteClick(assignment)}
                   />

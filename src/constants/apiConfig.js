@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
   SUBMIT_ASSIGNMENT: '/submissions/:id/submit',
   EDIT_SUBMISSION: '/submissions/:id/edit-submission',
   MY_SUBMISSIONS: '/submissions/my-submissions',
+  GET_ASSIGNMENT_SUBMISSIONS: '/submissions/:assignmentId/submissions',
   DELETE_SUBMISSION: '/submissions/:submissionId',
   GET_SUBMISSION_PDF: '/submissions/:assignmentId/submission/:submissionId/pdf',
 };

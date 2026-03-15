@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import MainLayout from '../components/templates/MainLayout';
 import { Button } from '../components/atoms';
 import { PageTitle } from '../components/molecules';
-import { DueAssignments, SearchAssignment, MyAssignments, MySubmissions, SubmitorEditAssignment } from '../components/organisms';
+import { DueAssignments, SearchAssignment, MyAssignments, MySubmissions, SubmitorEditAssignment, ManageSubmissons } from '../components/organisms';
 import { useAuth } from '../context/AuthContext';
 
 const Assignments = () => {

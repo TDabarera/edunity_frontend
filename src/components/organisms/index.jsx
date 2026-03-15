@@ -20,6 +20,7 @@ import MyAssignments from './MyAssignments.jsx';
 import UploadOrEditAssignment from './UploadOrEditAssignment.jsx';
 import SubmitorEditAssignment from './SubmitorEditAssignment.jsx';
 import MySubmissions from './MySubmissions.jsx';
+import ManageSubmissons from './ManageSubmissons.jsx';
 
 export {
     Header,
@@ -44,7 +45,8 @@ export {
     UploadOrEditAssignment,
     SubmitorEditAssignment,
     SubmitorEditAssignment as SubmitorEditAsignment,
-    MySubmissions
+    MySubmissions,
+    ManageSubmissons
 };
 
 
