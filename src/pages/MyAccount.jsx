@@ -7,16 +7,16 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const MyAccount = () => {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, isAuthInitialized, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (isAuthInitialized && !isLoggedIn) {
       navigate('/login');
     }
-  }, [isLoggedIn, navigate]);
+  }, [isAuthInitialized, isLoggedIn, navigate]);
 
-  if (!isLoggedIn) return null;
+  if (!isAuthInitialized || !isLoggedIn) return null;
 
   return (
     <MainLayout isLoggedIn={isLoggedIn} user={user}>

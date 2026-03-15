@@ -1,9 +1,12 @@
-export const API_BASE_URL ='http://localhost:5000/api/v1';
+export const API_BASE_URL = 'http://localhost:5000/api/v1';
+export const API_URL = API_BASE_URL;
 
 export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: '/login',
   SIGNUP: '/users/createuser',
+  VERIFY_EMAIL: '/verify-email',
+  RESEND_VERIFICATION: '/resend-verification',
   LOGOUT: '/logout',
   REFRESH_TOKEN: '/auth/refresh',
 
@@ -43,4 +46,21 @@ export const API_ENDPOINTS = {
 
   // Student endpoints
   MY_GRADES: '/student/grades',
+
+  // Assignment endpoints
+  MY_ASSIGNMENTS: '/assignments/my-assignments/assigned',
+  GET_ASSIGNMENT: '/assignments/:id',
+  SEARCH_ASSIGNMENTS: '/assignments/search/by-title',
+  GET_ALL_ASSIGNMENTS: '/assignments/all',
+  DELETE_ASSIGNMENT: '/assignments/:id',
+  GET_ASSIGNMENT_PDF: '/assignments/:assignmentId/pdf',
+  CREATE_ASSIGNMENT: '/assignments/upload',
+  UPDATE_ASSIGNMENT: '/assignments/:assignmentId/edit',
+
+  // Submission endpoints
+  SUBMIT_ASSIGNMENT: '/submissions/:id/submit',
+  EDIT_SUBMISSION: '/submissions/:id/edit-submission',
+  MY_SUBMISSIONS: '/submissions/my-submissions',
+  DELETE_SUBMISSION: '/submissions/:submissionId',
+  GET_SUBMISSION_PDF: '/submissions/:assignmentId/submission/:submissionId/pdf',
 };

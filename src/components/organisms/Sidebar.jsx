@@ -21,6 +21,7 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
     'My Account': '/my-account',
     'User Management': '/user-management',
     'Class Management': '/class-management',
+    'Assignments': '/assignments',
     'Parents': '/parent-management',
     'Attendance': '/attendance',
     'Student Grades': '/student-grades',

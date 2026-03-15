@@ -1,9 +1,9 @@
-import axios from 'axios';
-import { API_BASE_URL, API_ENDPOINTS } from '../constants';
+import { API_ENDPOINTS } from '../constants';
+import api from './apiClient';
 
 export const LoginUser = async (email, password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.LOGIN}`, {
+    const response = await api.post(API_ENDPOINTS.LOGIN, {
       email,
       password,
     });
@@ -19,7 +19,7 @@ export const LoginUser = async (email, password) => {
 
 export const SignupUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.SIGNUP}`, userData);
+    const response = await api.post(API_ENDPOINTS.SIGNUP, userData);
     return response.data; // { message: 'Verification email sent' }
   } catch (error) {
     const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Signup failed';
@@ -32,7 +32,7 @@ export const SignupUser = async (userData) => {
 
 export const VerifyEmail = async (token) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.VERIFY_EMAIL}`, { token });
+    const response = await api.post(API_ENDPOINTS.VERIFY_EMAIL, { token });
     return response.data; // { message: 'Email verified successfully' }
   } catch (error) {
     const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Verification failed';
@@ -45,7 +45,7 @@ export const VerifyEmail = async (token) => {
 
 export const ResendVerification = async (email) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}${API_ENDPOINTS.RESEND_VERIFICATION}`, { email });
+    const response = await api.post(API_ENDPOINTS.RESEND_VERIFICATION, { email });
     return response.data; // { message: 'Verification email sent' }
   } catch (error) {
     const errorMessage = error.response?.data?.error || error.response?.data?.message || error.message || 'Failed to resend verification';

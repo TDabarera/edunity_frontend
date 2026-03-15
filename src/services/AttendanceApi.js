@@ -1,5 +1,5 @@
-import axios from 'axios';
-import { API_BASE_URL, API_ENDPOINTS } from '../constants';
+import { API_URL, API_ENDPOINTS } from '../constants';
+import api from './apiClient';
 
 const getAuthToken = () => {
   return localStorage.getItem('edunity_token');
@@ -26,9 +26,9 @@ const handleApiError = (error, defaultMessage) => {
 export const GetAttendanceRecords = async (params = {}) => {
   try {
     const queryString = new URLSearchParams(params).toString();
-    const url = `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE}${queryString ? `?${queryString}` : ''}`;
+    const url = `${API_ENDPOINTS.GET_ATTENDANCE}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: getAuthHeader(),
     });
     return response.data; // { status, records: [] }
@@ -44,8 +44,8 @@ export const GetAttendanceRecords = async (params = {}) => {
  */
 export const GetAttendanceById = async (recordId) => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE_BY_ID.replace(':id', recordId)}`,
+    const response = await api.get(
+      API_ENDPOINTS.GET_ATTENDANCE_BY_ID.replace(':id', recordId),
       {
         headers: getAuthHeader(),
       }
@@ -63,12 +63,12 @@ export const GetAttendanceById = async (recordId) => {
  */
 export const GetAttendanceByClass = async (classId) => {
   try {
-    const url = `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE_BY_CLASS.replace(':classId', classId)}`;
+    const url = API_ENDPOINTS.GET_ATTENDANCE_BY_CLASS.replace(':classId', classId);
     
-    console.log('[DEBUG GetAttendanceByClass] Full URL:', url);
+    console.log('[DEBUG GetAttendanceByClass] Full URL:', `${API_URL}${url}`);
     console.log('[DEBUG GetAttendanceByClass] ClassId param:', classId);
     
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: getAuthHeader(),
     });
     
@@ -81,10 +81,10 @@ export const GetAttendanceByClass = async (classId) => {
     if (error.response?.status === 404) {
       try {
         console.log('[DEBUG GetAttendanceByClass] Trying fallback with query param');
-        const fallbackUrl = `${API_BASE_URL}/attendance/all?classId=${classId}`;
-        console.log('[DEBUG GetAttendanceByClass] Fallback URL:', fallbackUrl);
+        const fallbackUrl = `/attendance/all?classId=${classId}`;
+        console.log('[DEBUG GetAttendanceByClass] Fallback URL:', `${API_URL}${fallbackUrl}`);
         
-        const response = await axios.get(fallbackUrl, {
+        const response = await api.get(fallbackUrl, {
           headers: getAuthHeader(),
         });
         
@@ -105,8 +105,8 @@ export const GetAttendanceByClass = async (classId) => {
  */
 export const CreateAttendanceRecord = async (data) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}${API_ENDPOINTS.CREATE_ATTENDANCE}`,
+    const response = await api.post(
+      API_ENDPOINTS.CREATE_ATTENDANCE,
       data,
       {
         headers: getAuthHeader(),
@@ -126,8 +126,8 @@ export const CreateAttendanceRecord = async (data) => {
  */
 export const UpdateAttendanceRecord = async (recordId, data) => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}${API_ENDPOINTS.UPDATE_ATTENDANCE.replace(':id', recordId)}`,
+    const response = await api.put(
+      API_ENDPOINTS.UPDATE_ATTENDANCE.replace(':id', recordId),
       data,
       {
         headers: getAuthHeader(),
@@ -146,8 +146,8 @@ export const UpdateAttendanceRecord = async (recordId, data) => {
  */
 export const DeleteAttendanceRecord = async (recordId) => {
   try {
-    const response = await axios.delete(
-      `${API_BASE_URL}${API_ENDPOINTS.DELETE_ATTENDANCE.replace(':id', recordId)}`,
+    const response = await api.delete(
+      API_ENDPOINTS.DELETE_ATTENDANCE.replace(':id', recordId),
       {
         headers: getAuthHeader(),
       }
@@ -166,9 +166,9 @@ export const DeleteAttendanceRecord = async (recordId) => {
 export const GetAttendanceStats = async (params = {}) => {
   try {
     const queryString = new URLSearchParams(params).toString();
-    const url = `${API_BASE_URL}${API_ENDPOINTS.GET_ATTENDANCE_STATS}${queryString ? `?${queryString}` : ''}`;
+    const url = `${API_ENDPOINTS.GET_ATTENDANCE_STATS}${queryString ? `?${queryString}` : ''}`;
     
-    const response = await axios.get(url, {
+    const response = await api.get(url, {
       headers: getAuthHeader(),
     });
     return response.data; // { status, stats }

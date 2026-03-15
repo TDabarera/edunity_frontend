@@ -18,7 +18,9 @@ const Popup = ({
   onCancel = () => {},
   confirmText = 'Yes',
   cancelText = 'No',
+  // eslint-disable-next-line no-unused-vars
   confirmVariant = 'contained',
+  // eslint-disable-next-line no-unused-vars
   cancelVariant = 'outlined',
   imageUrl = '/Characters/Thinking.png',
 }) => {

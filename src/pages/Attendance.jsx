@@ -11,7 +11,7 @@ import { Button } from '../components/atoms';
 import colors from '../styles/colors';
 
 const Attendance = () => {
-  const { user, isLoggedIn } = useAuth();
+  const { user, isLoggedIn, isAuthInitialized } = useAuth();
   const navigate = useNavigate();
   const { showToast, Toast: ToastComponent } = useToast();
   const [selectedClass, setSelectedClass] = useState('');
@@ -29,6 +29,10 @@ const Attendance = () => {
 
   // Check if user has permission to view this page
   useEffect(() => {
+    if (!isAuthInitialized) {
+      return;
+    }
+
     if (!isLoggedIn) {
       navigate('/login');
       return;
@@ -37,7 +41,7 @@ const Attendance = () => {
     if (user?.role !== 'Teacher' && user?.role !== 'Admin') {
       navigate('/');
     }
-  }, [isLoggedIn, user, navigate]);
+  }, [isAuthInitialized, isLoggedIn, user, navigate]);
 
   // Fetch students when class is selected
   useEffect(() => {
@@ -81,7 +85,7 @@ const Attendance = () => {
   }, [selectedClass, showToast]);
 
   // Don't render if user doesn't have permission
-  if (!isLoggedIn || (user?.role !== 'Teacher' && user?.role !== 'Admin')) {
+  if (!isAuthInitialized || !isLoggedIn || (user?.role !== 'Teacher' && user?.role !== 'Admin')) {
     return null;
   }
 

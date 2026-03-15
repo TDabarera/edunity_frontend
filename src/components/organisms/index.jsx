@@ -14,6 +14,12 @@ import ClassForm from './ClassForm.jsx';
 import AttendanceForm from './AttendanceForm.jsx';
 import AttendanceRecords from './AttendanceRecords.jsx';
 import ParentChildrenForm from './ParentChildrenForm.jsx';
+import DueAssignments from './DueAssignments.jsx';
+import SearchAssignment from './SearchAssignment.jsx';
+import MyAssignments from './MyAssignments.jsx';
+import UploadOrEditAssignment from './UploadOrEditAssignment.jsx';
+import SubmitorEditAssignment from './SubmitorEditAssignment.jsx';
+import MySubmissions from './MySubmissions.jsx';
 
 export {
     Header,
@@ -31,7 +37,14 @@ export {
     ClassForm,
     AttendanceForm,
     AttendanceRecords,
-    ParentChildrenForm
+    ParentChildrenForm,
+    DueAssignments,
+    SearchAssignment,
+    MyAssignments,
+    UploadOrEditAssignment,
+    SubmitorEditAssignment,
+    SubmitorEditAssignment as SubmitorEditAsignment,
+    MySubmissions
 };
 
 

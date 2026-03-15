@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { LoginUser, SignupUser, VerifyEmail, ResendVerification } from '../services';
 
 /**
@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 
   // Load saved authentication data from localStorage on app startup
   useEffect(() => {
@@ -31,6 +32,8 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       // Ignore localStorage errors (e.g., private browsing mode)
       console.warn('Failed to load auth data from localStorage:', error);
+    } finally {
+      setIsAuthInitialized(true);
     }
   }, []);
 
@@ -139,21 +142,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Memoized context value to prevent unnecessary re-renders
-  const value = useMemo(
-    () => ({
-      user,
-      token,
-      isLoggedIn,
-      login,
-      logout,
-      signup,
-      verifyEmail,
-      resendVerification,
-      updateProfile,
-    }),
-    [user, token, isLoggedIn, updateProfile]
-  );
+  const value = {
+    user,
+    token,
+    isLoggedIn,
+    isAuthInitialized,
+    login,
+    logout,
+    signup,
+    verifyEmail,
+    resendVerification,
+    updateProfile,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

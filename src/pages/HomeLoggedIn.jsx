@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
+import { SearchAssignment, DueAssignments, MyAssignments } from '../components/organisms';
 
 const HomeLoggedIn = ({ user }) => {
   return (
@@ -13,6 +14,10 @@ const HomeLoggedIn = ({ user }) => {
           This is the logged-in home page content.
         </Typography>
       </Container>
+      <DueAssignments/>
+      <SearchAssignment />
+      <MyAssignments />
+
     </MainLayout>
   );
 };
