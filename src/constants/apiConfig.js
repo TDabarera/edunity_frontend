@@ -4,7 +4,7 @@ export const API_URL = API_BASE_URL;
 export const API_ENDPOINTS = {
   // Auth endpoints
   LOGIN: '/login',
-  SIGNUP: '/users/createuser',
+  SIGNUP: '/users/signup',
   VERIFY_EMAIL: '/verify-email',
   RESEND_VERIFICATION: '/resend-verification',
   LOGOUT: '/logout',
@@ -19,6 +19,7 @@ export const API_ENDPOINTS = {
   // Admin endpoints
   USER_MANAGEMENT: '/admin/users',
   GET_USERS: '/users',
+  GET_PENDING_USERS: '/users/pending',
   CREATE_USER: '/users/createuser',
   UPDATE_USER_ADMIN: '/users/:id',
   DELETE_USER: '/users/:id',

@@ -1,6 +1,33 @@
 import { API_URL, API_ENDPOINTS } from '../constants';
 import api from './apiClient';
 
+const normalizeUserType = (userType) => {
+  const normalized = String(userType || '').trim().toLowerCase();
+  if (!normalized) return '';
+  return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)}`;
+};
+
+const buildCreateUserPayload = (userData = {}) => {
+  const payload = {
+    firstName: String(userData.firstName || '').trim(),
+    lastName: String(userData.lastName || '').trim(),
+    userType: normalizeUserType(userData.userType),
+    email: String(userData.email || '').trim(),
+    password: userData.password,
+  };
+
+  const phone = String(userData.phone || '').trim();
+  const address = String(userData.address || '').trim();
+  const classId = String(userData.classId || '').trim();
+
+  if (phone) payload.phone = phone;
+  if (userData.dob) payload.dob = userData.dob;
+  if (address) payload.address = address;
+  if (classId) payload.classId = classId;
+
+  return payload;
+};
+
 const getAuthToken = () => {
   return localStorage.getItem('edunity_token');
 };
@@ -31,9 +58,20 @@ export const GetUsers = async () => {
 
 export const GetAllUsers = GetUsers;
 
+export const GetPendingUsers = async () => {
+  try {
+    const response = await api.get(API_ENDPOINTS.GET_PENDING_USERS, {
+      headers: getAuthHeader(),
+    });
+    return response.data; // { status, count, users: [] }
+  } catch (error) {
+    throw handleApiError(error, 'Failed to fetch pending users');
+  }
+};
+
 export const CreateUser = async (userData) => {
   try {
-    const response = await api.post(API_ENDPOINTS.CREATE_USER, userData, {
+    const response = await api.post(API_ENDPOINTS.CREATE_USER, buildCreateUserPayload(userData), {
       headers: getAuthHeader(),
     });
     return response.data;
