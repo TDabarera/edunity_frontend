@@ -58,10 +58,25 @@ const MySubmissions = () => {
       setLoading(true);
       setError(null);
 
-      const [submissionsResponse, classesResponse] = await Promise.all([
+      const [submissionsResult, classesResult] = await Promise.allSettled([
         GetMySubmissions(),
         GetAllClasses(),
       ]);
+
+      if (submissionsResult.status === 'rejected') {
+        throw submissionsResult.reason;
+      }
+
+      const submissionsResponse = submissionsResult.value;
+      setSubmissions(submissionsResponse?.submissions || []);
+
+      if (classesResult.status !== 'fulfilled') {
+        setClassNameLookup({});
+        console.warn('Unable to fetch class metadata for submissions:', classesResult.reason);
+        return;
+      }
+
+      const classesResponse = classesResult.value;
 
       const classList = Array.isArray(classesResponse?.data)
         ? classesResponse.data
@@ -74,7 +89,6 @@ const MySubmissions = () => {
               : [];
 
       setClassNameLookup(buildClassLookup(classList));
-      setSubmissions(submissionsResponse?.submissions || []);
     } catch (err) {
       setError(err.message || 'Failed to fetch submissions');
       console.error('Error fetching submissions:', err);

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Typography, CircularProgress, Alert, TablePagination } from '@mui/material';
 import { NotificationLog, NotificationBody } from '../molecules';
-import { GetNotifications, GetNotificationById } from '../../services';
+import { GetMyNotifications, GetNotificationById } from '../../services';
 import { useToast } from './useToast';
 import { useAuth } from '../../context/AuthContext';
 import colors from '../../styles/colors';
@@ -44,7 +44,7 @@ const Notifications = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await GetNotifications(queryParams);
+      const response = await GetMyNotifications(queryParams);
       const list = response?.notifications || [];
 
       setNotifications(list);

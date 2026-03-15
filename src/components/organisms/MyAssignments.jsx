@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { Button } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { GetAllAssignments, DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
+import { GetUploadedAssignments, DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
 import { useToast } from './useToast';
 import Popup from './Popup';
 import ManageSubmissons from './ManageSubmissons';
@@ -37,6 +37,22 @@ const buildClassLookup = (classList = []) => {
   }, {});
 };
 
+const getAssignmentsFromResponse = (response) => {
+  if (Array.isArray(response?.assignments)) {
+    return response.assignments;
+  }
+
+  if (Array.isArray(response?.data?.assignments)) {
+    return response.data.assignments;
+  }
+
+  if (Array.isArray(response?.data)) {
+    return response.data;
+  }
+
+  return [];
+};
+
 const MyAssignments = ({ onEdit }) => {
   const { user } = useAuth();
   const [assignments, setAssignments] = useState([]);
@@ -67,7 +83,10 @@ const MyAssignments = ({ onEdit }) => {
     try {
       setLoading(true);
       setError(null);
-      const [data, classesResponse] = await Promise.all([GetAllAssignments(), GetAllClasses()]);
+      const [assignmentsResponse, classesResponse] = await Promise.all([
+        GetUploadedAssignments(user?.id),
+        GetAllClasses(),
+      ]);
 
       const classList = Array.isArray(classesResponse?.data)
         ? classesResponse.data
@@ -80,7 +99,7 @@ const MyAssignments = ({ onEdit }) => {
               : [];
 
       setClassNameLookup(buildClassLookup(classList));
-      setAssignments(data.assignments || []);
+      setAssignments(getAssignmentsFromResponse(assignmentsResponse));
     } catch (err) {
       const errorMessage = err.message || 'Failed to fetch assignments';
       setError(errorMessage);
@@ -89,7 +108,7 @@ const MyAssignments = ({ onEdit }) => {
     } finally {
       setLoading(false);
     }
-  }, [showToast]);
+  }, [showToast, user?.id]);
 
   useEffect(() => {
     fetchAssignments();

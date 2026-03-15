@@ -252,14 +252,16 @@ const MyAccountInformation = ({ userId: userIdProp }) => {
               <Grid item xs={12} md={6} sx={{ width: '100%' }}>
                 <Input label="Phone" value={form.phone} onChange={handleChange('phone')} />
               </Grid>
-              <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-                <SelectInput
-                  label="User Type"
-                  value={form.userType}
-                  onChange={handleChange('userType')}
-                  options={userTypeOptions}
-                />
-              </Grid>
+              {user?.role?.toLowerCase() === 'admin' && (
+                <Grid item xs={12} md={6} sx={{ width: '100%' }}>
+                  <SelectInput
+                    label="User Type"
+                    value={form.userType}
+                    onChange={handleChange('userType')}
+                    options={userTypeOptions}
+                  />
+                </Grid>
+              )}
               <Grid item xs={12} sx={{ width: '100%' }}>
                 <Input label="Address" value={form.address} onChange={handleChange('address')} multiline minRows={2} />
               </Grid>

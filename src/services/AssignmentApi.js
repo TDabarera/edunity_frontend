@@ -41,6 +41,22 @@ export const GetMyAssignments = async () => {
   }
 };
 
+export const GetUploadedAssignments = async (userId) => {
+  try {
+    const payload = userId ? { userId } : {};
+    const response = await axios.post(
+      `${API_BASE_URL}${API_ENDPOINTS.UPLOADED_ASSIGNMENTS}`,
+      payload,
+      {
+        headers: getAuthHeader(),
+      }
+    );
+    return response.data; // { success: true, count, assignments: [] }
+  } catch (error) {
+    throw handleApiError(error, 'Failed to fetch uploaded assignments');
+  }
+};
+
 export const GetAssignmentById = async (assignmentId) => {
   try {
     const response = await axios.get(

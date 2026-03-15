@@ -50,6 +50,7 @@ export const API_ENDPOINTS = {
 
   // Assignment endpoints
   MY_ASSIGNMENTS: '/assignments/my-assignments/assigned',
+  UPLOADED_ASSIGNMENTS: '/assignments/uploaded-by-me',
   GET_ASSIGNMENT: '/assignments/:id',
   SEARCH_ASSIGNMENTS: '/assignments/search/by-title',
   GET_ALL_ASSIGNMENTS: '/assignments/all',
@@ -68,6 +69,8 @@ export const API_ENDPOINTS = {
 
   // Notification endpoints
   GET_NOTIFICATIONS: '/notifications',
+  MY_NOTIFICATIONS: '/notifications/my-notifications',
   GET_NOTIFICATION_BY_ID: '/notifications/:notificationId',
+  GET_MY_NOTIFICATION_BY_ID: '/notifications/my-notifications/:notificationId',
   RESEND_NOTIFICATION: '/notifications/:notificationId/resend',
 };
