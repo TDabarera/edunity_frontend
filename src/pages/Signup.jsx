@@ -17,12 +17,16 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await signup(data);
-      showToast('Signup successful!', 'success');
+      const response = await signup(data);
+      showToast(
+        response?.message || 'Signup successful. Your account is pending admin approval.',
+        'success'
+      );
       setTimeout(() => navigate('/'), 1500);
     } catch (err) {
       const errorMsg = err.message || err.data?.message || 'Signup failed';
       showToast(errorMsg, 'error');
+    } finally {
       setLoading(false);
     }
   };

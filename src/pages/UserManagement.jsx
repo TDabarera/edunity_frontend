@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Container, Dialog, DialogContent } from '@mui/material';
 import MainLayout from '../components/templates/MainLayout';
-import { UserTable, Toast, UserForm, Popup } from '../components/organisms';
+import { UserTable, UserForm, Popup, PendingUsers } from '../components/organisms';
 import { PageTitle } from '../components/molecules';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/organisms/useToast.jsx';
 import { DeleteUser } from '../services';
+import { decodeJWT } from '../utils/jwtUtils';
 
 const UserManagement = () => {
   const { user } = useAuth();
@@ -14,17 +15,31 @@ const UserManagement = () => {
   // Modal state
   const [showCreate, setShowCreate] = useState(false);
   const [editUser, setEditUser] = useState(null);
+  const [editUserOptions, setEditUserOptions] = useState({ showApprovalField: false });
   const [refreshToken, setRefreshToken] = useState('');
   const [confirmDeleteUser, setConfirmDeleteUser] = useState(null);
 
   const currentUserId = user?.id || user?._id;
+  const token = localStorage.getItem('edunity_token');
+  const decodedToken = token ? decodeJWT(token) : null;
+  const tokenRole = String(
+    decodedToken?.role ||
+    decodedToken?.userType ||
+    decodedToken?.user?.role ||
+    decodedToken?.user?.userType ||
+    ''
+  ).toLowerCase();
+  const fallbackRole = String(user?.role || '').toLowerCase();
+  const normalizedRole = tokenRole || fallbackRole;
+  const isAdmin = normalizedRole === 'admin';
 
   const handleAddUser = () => {
     setShowCreate(true);
   };
 
-  const handleEditUser = (userData) => {
+  const handleEditUser = (userData, options = {}) => {
     setEditUser(userData);
+    setEditUserOptions({ showApprovalField: !!options.showApprovalField });
   };
 
   const handleDeleteUser = (userId) => {
@@ -54,13 +69,21 @@ const UserManagement = () => {
           refreshToken={refreshToken}
           currentUserId={currentUserId}
         />
+
+        {isAdmin && (
+          <PendingUsers
+            onEditUser={handleEditUser}
+            onError={handleTableError}
+            refreshToken={refreshToken}
+          />
+        )}
       </Container>
 
       {/* Create User Modal */}
       <Dialog open={showCreate} onClose={() => setShowCreate(false)} maxWidth="md" fullWidth>
         <DialogContent>
           <UserForm
-            onSuccess={(created) => {
+            onSuccess={() => {
               setShowCreate(false);
               showToast('User created successfully!', 'success');
               setRefreshToken(String(Date.now()));
@@ -71,17 +94,30 @@ const UserManagement = () => {
       </Dialog>
 
       {/* Edit User Modal */}
-      <Dialog open={!!editUser} onClose={() => setEditUser(null)} maxWidth="md" fullWidth>
+      <Dialog
+        open={!!editUser}
+        onClose={() => {
+          setEditUser(null);
+          setEditUserOptions({ showApprovalField: false });
+        }}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogContent>
           {editUser && (
             <UserForm
               user={editUser}
-              onSuccess={(updated) => {
+              showApprovalField={editUserOptions.showApprovalField}
+              onSuccess={() => {
                 setEditUser(null);
+                setEditUserOptions({ showApprovalField: false });
                 showToast('User updated successfully!', 'success');
                 setRefreshToken(String(Date.now()));
               }}
-              onCancel={() => setEditUser(null)}
+              onCancel={() => {
+                setEditUser(null);
+                setEditUserOptions({ showApprovalField: false });
+              }}
             />
           )}
         </DialogContent>

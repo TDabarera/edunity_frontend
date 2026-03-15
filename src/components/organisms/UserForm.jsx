@@ -12,6 +12,8 @@ const userTypeOptions = [
   { label: 'Teacher', value: 'Teacher' },
 ];
 
+const isStudentType = (userType) => String(userType || '').toLowerCase() === 'student';
+
 const initialForm = {
   firstName: '',
   lastName: '',
@@ -24,9 +26,18 @@ const initialForm = {
   dob: '',
   classId: '',
   children: [],
+  approved: false,
 };
 
-const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassField = false, showChildrenSelector = false }) => {
+const UserForm = ({
+  user = null,
+  onSuccess,
+  onCancel,
+  defaultRole,
+  hideClassField = false,
+  showChildrenSelector = false,
+  showApprovalField = false,
+}) => {
   const isEdit = !!user;
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
@@ -49,6 +60,7 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
         dob: user.dob ? String(user.dob).slice(0, 10) : '', // yyyy-mm-dd
         classId: user.classId || '',
         children: user.children || [],
+        approved: typeof user.approved === 'boolean' ? user.approved : false,
       });
     } else {
       setForm({ ...initialForm, userType: defaultRole || '' });
@@ -95,8 +107,22 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
     return required.every((k) => (form[k] || '').toString().trim().length > 0);
   }, [form, isEdit]);
 
+  const shouldShowClassField = !hideClassField && isStudentType(form.userType);
+
   const handleChange = (key) => (e) => {
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
+    const value = e.target.value;
+    setForm((prev) => {
+      if (key === 'userType') {
+        return {
+          ...prev,
+          userType: value,
+          // Clear class when switching away from Student so hidden stale values aren't submitted.
+          classId: isStudentType(value) ? prev.classId : '',
+        };
+      }
+
+      return { ...prev, [key]: value };
+    });
   };
 
   const handleChildrenChange = (studentId) => {
@@ -110,6 +136,14 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
           : [...children, studentId]
       };
     });
+  };
+
+  const handleApprovalChange = (event) => {
+    const nextValue = event.target.value;
+    setForm((prev) => ({
+      ...prev,
+      approved: nextValue === 'approved',
+    }));
   };
 
   // Helper to get class name from classId
@@ -144,6 +178,12 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
         const payload = { ...form };
         delete payload.password;
         delete payload.confirmPassword;
+        if (!isStudentType(payload.userType)) {
+          delete payload.classId;
+        }
+        if (!showApprovalField) {
+          delete payload.approved;
+        }
         const res = await UpdateUser(user._id, payload);
         const successMsg = res?.message || 'User updated successfully';
         showToast(successMsg, 'success');
@@ -151,6 +191,10 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
       } else {
         const createPayload = { ...form };
         delete createPayload.confirmPassword;
+        delete createPayload.approved;
+        if (!isStudentType(createPayload.userType)) {
+          delete createPayload.classId;
+        }
         const res = await CreateUser(createPayload);
         const successMsg = res?.message || 'User created successfully!';
         showToast(successMsg, 'success');
@@ -182,9 +226,11 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
         userType: user.userType || '',
         dob: user.dob ? String(user.dob).slice(0, 10) : '',
         classId: user.classId || '',
+        children: user.children || [],
+        approved: typeof user.approved === 'boolean' ? user.approved : false,
       });
     } else {
-      setForm(initialForm);
+      setForm({ ...initialForm, userType: defaultRole || '' });
     }
   };
 
@@ -223,6 +269,19 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
             <Grid item xs={12} sx={{ width: '100%' }}>
               <SelectInput label="User Type" value={form.userType} onChange={handleChange('userType')} options={userTypeOptions} required disabled={!!defaultRole} />
             </Grid>
+            {isEdit && showApprovalField && (
+              <Grid item xs={12} sx={{ width: '100%' }}>
+                <SelectInput
+                  label="User Approval"
+                  value={form.approved ? 'approved' : 'pending'}
+                  onChange={handleApprovalChange}
+                  options={[
+                    { label: 'Pending', value: 'pending' },
+                    { label: 'Approved', value: 'approved' },
+                  ]}
+                />
+              </Grid>
+            )}
             <Grid item xs={12} sx={{ width: '100%' }}>
         <Input
           label="Date of Birth"
@@ -230,13 +289,12 @@ const UserForm = ({ user = null, onSuccess, onCancel, defaultRole, hideClassFiel
           type="date"
           value={form.dob}
           onChange={handleChange('dob')}
-          required
           InputLabelProps={{ shrink: true }}
           inputProps={{ max: new Date().toISOString().slice(0, 10) }}
           fullWidth
         />
             </Grid>
-            {!hideClassField && (
+            {shouldShowClassField && (
               <Grid item xs={12} sx={{ width: '100%' }}>
                 <SelectInput
                   label="Class Name"

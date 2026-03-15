@@ -94,9 +94,9 @@ const SignupForm = ({ onSubmit, error, loading }) => {
   };
 
   const userTypeOptions = [
-    { value: 'student', label: 'Student' },
-    { value: 'teacher', label: 'Teacher' },
-    { value: 'parent', label: 'Parent' }
+    { value: 'Student', label: 'Student' },
+    { value: 'Teacher', label: 'Teacher' },
+    { value: 'Parent', label: 'Parent' }
   ];
 
   const validationMessages = Array.from(new Set(Object.values(errors).filter(Boolean)));
@@ -182,7 +182,6 @@ const SignupForm = ({ onSubmit, error, loading }) => {
           onBlur={handleBlur}
           error={!!errors.phone}
           helperText={errors.phone}
-          required
           autoComplete="tel"
           inputMode="tel"
           inputProps={{ pattern: phoneRegex.source, maxLength: 20 }}
@@ -199,7 +198,6 @@ const SignupForm = ({ onSubmit, error, loading }) => {
           onBlur={handleBlur}
           error={!!errors.dob}
           helperText={errors.dob}
-          required
           InputLabelProps={{ shrink: true }}
           inputProps={{ max: todayISO }}
           fullWidth
@@ -214,7 +212,6 @@ const SignupForm = ({ onSubmit, error, loading }) => {
           error={!!errors.address}
           helperText={errors.address}
           autoComplete="street-address"
-          required
           multiline
           rows={3}
           fullWidth
