@@ -21,6 +21,8 @@ import UploadOrEditAssignment from './UploadOrEditAssignment.jsx';
 import SubmitorEditAssignment from './SubmitorEditAssignment.jsx';
 import MySubmissions from './MySubmissions.jsx';
 import ManageSubmissons from './ManageSubmissons.jsx';
+import NotificationLogs from './NotificationLogs.jsx';
+import Notifications from './Notifications.jsx';
 
 export {
     Header,
@@ -46,7 +48,9 @@ export {
     SubmitorEditAssignment,
     SubmitorEditAssignment as SubmitorEditAsignment,
     MySubmissions,
-    ManageSubmissons
+    ManageSubmissons,
+    NotificationLogs,
+    Notifications
 };
 
 

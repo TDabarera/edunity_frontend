@@ -64,4 +64,9 @@ export const API_ENDPOINTS = {
   GET_ASSIGNMENT_SUBMISSIONS: '/submissions/:assignmentId/submissions',
   DELETE_SUBMISSION: '/submissions/:submissionId',
   GET_SUBMISSION_PDF: '/submissions/:assignmentId/submission/:submissionId/pdf',
+
+  // Notification endpoints
+  GET_NOTIFICATIONS: '/notifications',
+  GET_NOTIFICATION_BY_ID: '/notifications/:notificationId',
+  RESEND_NOTIFICATION: '/notifications/:notificationId/resend',
 };
