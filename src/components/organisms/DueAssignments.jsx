@@ -95,7 +95,7 @@ const DueAssignments = ({ onAssignmentClick }) => {
   }
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, border: `1px solid ${colors.primary.grey}`, borderRadius: 2 }}>
       <Typography
         variant="h5"
         sx={{

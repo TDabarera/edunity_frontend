@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { SearchBar } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { SearchAssignmentsByTitle, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
+import { SearchAssignmentsByTitle, GetAssignmentPdfUrl, GetAllClasses, GetAllAssignments } from '../../services';
+import { useAuth } from '../../context/AuthContext';
+import ManageSubmissons from './ManageSubmissons';
 import colors from '../../styles/colors';
 import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
+import { decodeJWT } from '../../utils/jwtUtils';
 
 const getClassName = (classItem) => {
   if (!classItem) return '';
@@ -32,12 +35,44 @@ const buildClassLookup = (classList = []) => {
 };
 
 const SearchAssignment = ({ onAssignmentClick }) => {
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
   const [classNameLookup, setClassNameLookup] = useState({});
+  const [selectedAssignmentForSubmissions, setSelectedAssignmentForSubmissions] = useState(null);
+
+  const token = localStorage.getItem('edunity_token');
+  const decodedToken = token ? decodeJWT(token) : null;
+  const tokenRole = String(
+    decodedToken?.role ||
+    decodedToken?.userType ||
+    decodedToken?.user?.role ||
+    decodedToken?.user?.userType ||
+    ''
+  ).toLowerCase();
+  const fallbackRole = String(user?.role || '').toLowerCase();
+  const normalizedRole = tokenRole || fallbackRole;
+  const canManageSubmissions = normalizedRole === 'teacher' || normalizedRole === 'admin';
+  const canViewAllAssignments = canManageSubmissions;
+
+  const fetchAllAssignments = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setHasSearched(true);
+      const data = await GetAllAssignments();
+      setAssignments(data.assignments || []);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch assignments');
+      console.error('Error fetching all assignments:', err);
+      setAssignments([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchClassLookup = async () => {
@@ -62,10 +97,21 @@ const SearchAssignment = ({ onAssignmentClick }) => {
     fetchClassLookup();
   }, []);
 
+  useEffect(() => {
+    if (canViewAllAssignments) {
+      fetchAllAssignments();
+    }
+  }, [canViewAllAssignments, fetchAllAssignments]);
+
   const handleSearch = async (value) => {
     setSearchTerm(value);
-    
+
     if (!value.trim()) {
+      if (canViewAllAssignments) {
+        await fetchAllAssignments();
+        return;
+      }
+
       setAssignments([]);
       setError(null);
       setHasSearched(false);
@@ -100,8 +146,16 @@ const SearchAssignment = ({ onAssignmentClick }) => {
     }
   };
 
+  const handleOpenManageSubmissions = (assignment) => {
+    setSelectedAssignmentForSubmissions(assignment);
+  };
+
+  const handleCloseManageSubmissions = () => {
+    setSelectedAssignmentForSubmissions(null);
+  };
+
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 3, border: `1px solid ${colors.primary.grey}`, borderRadius: 2 }}>
       <Typography
         variant="h5"
         sx={{
@@ -120,6 +174,15 @@ const SearchAssignment = ({ onAssignmentClick }) => {
           onChange={(e) => handleSearch(e.target.value)}
         />
       </Box>
+
+      {selectedAssignmentForSubmissions && (
+        <Box sx={{ mb: 3 }}>
+          <ManageSubmissons
+            assignment={selectedAssignmentForSubmissions}
+            onClose={handleCloseManageSubmissions}
+          />
+        </Box>
+      )}
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -151,7 +214,7 @@ const SearchAssignment = ({ onAssignmentClick }) => {
           }}
         >
           <Typography variant="body1" sx={{ color: colors.text.secondary }}>
-            No assignments found for "{searchTerm}".
+            {searchTerm ? `No assignments found for "${searchTerm}".` : 'No assignments found.'}
           </Typography>
         </Box>
       )}
@@ -175,6 +238,8 @@ const SearchAssignment = ({ onAssignmentClick }) => {
                   assignment={assignment}
                   classNameLookup={classNameLookup}
                   onClick={() => handleCardClick(assignment)}
+                  showViewSubmissionsAction={canManageSubmissions}
+                  onViewSubmissions={canManageSubmissions ? () => handleOpenManageSubmissions(assignment) : undefined}
                 />
               </Grid>
             ))}

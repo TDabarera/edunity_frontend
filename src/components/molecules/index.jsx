@@ -9,6 +9,7 @@ import SelectClass from './SelectClass.jsx';
 import ParentChildren from './ParentChildren.jsx';
 import AssignmentCard from './AssignmentCard.jsx';
 import SubmissionCard from './SubmissionCard.jsx';
+import SubmissionActionRow from './SubmissionActionRow.jsx';
 
 export {
     BrandingHeader,
@@ -21,5 +22,6 @@ export {
     SelectClass,
     ParentChildren,
     AssignmentCard,
-    SubmissionCard
+    SubmissionCard,
+    SubmissionActionRow
 };
