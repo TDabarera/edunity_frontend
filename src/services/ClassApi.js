@@ -29,6 +29,24 @@ export const GetAllClasses = async () => {
   }
 };
 
+export const GetMyClassesByUserId = async (userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to fetch assigned classes');
+  }
+
+  try {
+    const response = await api.get(
+      API_ENDPOINTS.GET_MY_CLASSES_BY_USER_ID.replace(':userid', userId),
+      {
+        headers: getAuthHeader(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error, 'Failed to fetch assigned classes');
+  }
+};
+
 export const GetClassById = async (classId) => {
   try {
     const response = await api.get(
