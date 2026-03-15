@@ -105,7 +105,7 @@ const SearchAssignment = ({ onAssignmentClick }) => {
 
   const handleSearch = async (value) => {
     setSearchTerm(value);
-    
+
     if (!value.trim()) {
       if (canViewAllAssignments) {
         await fetchAllAssignments();
@@ -250,18 +250,4 @@ const SearchAssignment = ({ onAssignmentClick }) => {
   );
 };
 
-
-/*this organsism should also have tghe ability to show all assignments via Looking at the controller code already attached, here's the full breakdown:
-
-Endpoint (from Assignment.js:36):
-
-Method: GET
-URL: /api/v1/assignments/all
-Allowed roles: Admin, Teacher
-Request
-
-Headers: Authorization: Bearer <jwt>
-Body: none
-Params: none
-Query: none*/
-export default SearchAssignment; 
+export default SearchAssignment;
