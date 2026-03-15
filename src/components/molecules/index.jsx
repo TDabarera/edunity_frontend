@@ -12,6 +12,7 @@ import SubmissionCard from './SubmissionCard.jsx';
 import SubmissionActionRow from './SubmissionActionRow.jsx';
 import NotificationLog from './NotificationLog.jsx';
 import NotificationBody from './NotificationBody.jsx';
+import DashboardCard from './DashboardCard.jsx';
 
 export {
     BrandingHeader,
@@ -27,5 +28,6 @@ export {
     SubmissionCard,
     SubmissionActionRow,
     NotificationLog,
-    NotificationBody
+    NotificationBody,
+    DashboardCard
 };
