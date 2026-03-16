@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { SubmissionCard } from '../molecules';
-import { GetMySubmissions, GetAllClasses, DeleteSubmissionById, GetSubmissionPdfUrl } from '../../services';
+import { GetMySubmissions, GetAllClasses, DeleteSubmissionById, GetSubmissionPdfUrl, ResolveSubmissionFileUrl } from '../../services';
 import { useToast } from './useToast';
 import Popup from './Popup';
 import SubmitorEditAssignment from './SubmitorEditAssignment';
@@ -127,7 +127,10 @@ const MySubmissions = () => {
     }
 
     try {
-      await openPdfInNewTab(() => GetSubmissionPdfUrl(assignmentId, submission._id));
+      await openPdfInNewTab({
+        getImmediatePdfUrl: () => ResolveSubmissionFileUrl(submission?.fileUrl || submission?.file),
+        getPdfUrl: () => GetSubmissionPdfUrl(assignmentId, submission._id),
+      });
     } catch (err) {
       showToast(err.message || 'Failed to open submission PDF', 'error');
       console.error('Error opening submission PDF:', err);

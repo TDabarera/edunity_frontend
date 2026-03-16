@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, CircularProgress, Alert, IconButton, Tooltip } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { SubmissionActionRow } from '../molecules';
-import { GetSubmissionsByAssignmentId, ResolveSubmissionFileUrl, GetAllClasses } from '../../services';
+import { GetSubmissionsByAssignmentId, ResolveSubmissionFileUrl, GetSubmissionPdfUrl, GetAllClasses } from '../../services';
 import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
 import colors from '../../styles/colors';
 
@@ -78,7 +78,10 @@ const ManageSubmissons = ({ assignment, onClose }) => {
 
   const handleView = async (submission) => {
     try {
-      await openPdfInNewTab(() => Promise.resolve(ResolveSubmissionFileUrl(submission?.file)));
+      await openPdfInNewTab({
+        getImmediatePdfUrl: () => ResolveSubmissionFileUrl(submission?.fileUrl || submission?.file),
+        getPdfUrl: () => GetSubmissionPdfUrl(assignmentId, submission?._id),
+      });
     } catch (err) {
       setError(err.message || 'Failed to open submission file');
     }

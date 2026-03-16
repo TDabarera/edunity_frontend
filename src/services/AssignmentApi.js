@@ -131,6 +131,10 @@ export const GetAssignmentPdfUrl = async (assignmentId) => {
   }
 };
 
+export const ResolveAssignmentFileUrl = (fileUrl) => {
+  return resolveFileUrl(fileUrl);
+};
+
 const buildAssignmentPayload = (payload, file) => {
   if (!file) {
     return payload;
