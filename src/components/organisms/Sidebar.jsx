@@ -25,8 +25,6 @@ const Sidebar = ({ open, toggleDrawer, userRole = 'Admin' }) => {
     'Notifications': '/notifications',
     'Parents': '/parent-management',
     'Attendance': '/attendance',
-    'Student Grades': '/student-grades',
-    'My Grades': '/my-grades',
   };
   
   // Normalize role to match menuConfig (backend sends capitalized)

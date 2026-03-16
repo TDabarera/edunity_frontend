@@ -36,7 +36,6 @@ export const API_ENDPOINTS = {
   // Teacher endpoints
   ATTENDANCE: '/teacher/attendance',
   CLASS_MANAGEMENT: '/teacher/classes',
-  STUDENT_GRADES: '/teacher/grades',
 
   // Attendance endpoints
   GET_ATTENDANCE: '/attendance',
@@ -54,9 +53,6 @@ export const API_ENDPOINTS = {
   GET_CLASS_BY_ID: '/class/:id',
   UPDATE_CLASS: '/class/:id',
   DELETE_CLASS: '/class/:id',
-
-  // Student endpoints
-  MY_GRADES: '/student/grades',
 
   // Assignment endpoints
   MY_ASSIGNMENTS: '/assignments/my-assignments/assigned',
