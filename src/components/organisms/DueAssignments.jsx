@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { AssignmentCard } from '../molecules';
-import { GetMyAssignments, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
+import { GetMyAssignments, GetAssignmentPdfUrl, ResolveAssignmentFileUrl, GetAllClasses } from '../../services';
 import colors from '../../styles/colors';
 import { openPdfInNewTab } from '../../utils/openPdfInNewTab';
 
@@ -83,7 +83,10 @@ const DueAssignments = ({ onAssignmentClick }) => {
 
   const handleCardClick = async (assignment) => {
     try {
-      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+      await openPdfInNewTab({
+        getImmediatePdfUrl: () => ResolveAssignmentFileUrl(assignment?.fileUrl || assignment?.file),
+        getPdfUrl: () => GetAssignmentPdfUrl(assignment._id),
+      });
 
       if (onAssignmentClick) {
         onAssignmentClick(assignment);

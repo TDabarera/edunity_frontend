@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { Button } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { GetUploadedAssignments, DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses } from '../../services';
+import { GetUploadedAssignments, DeleteAssignment, GetAssignmentPdfUrl, ResolveAssignmentFileUrl, GetAllClasses } from '../../services';
 import { useToast } from './useToast';
 import Popup from './Popup';
 import ManageSubmissons from './ManageSubmissons';
@@ -149,7 +149,10 @@ const MyAssignments = ({ onEdit }) => {
 
   const handleCardClick = async (assignment) => {
     try {
-      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+      await openPdfInNewTab({
+        getImmediatePdfUrl: () => ResolveAssignmentFileUrl(assignment?.fileUrl || assignment?.file),
+        getPdfUrl: () => GetAssignmentPdfUrl(assignment._id),
+      });
     } catch (err) {
       const errorMessage = err.message || 'Failed to open assignment PDF';
       showToast(errorMessage, 'error');

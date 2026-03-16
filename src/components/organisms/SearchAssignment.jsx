@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Typography, CircularProgress, Grid, Alert } from '@mui/material';
 import { SearchBar } from '../atoms';
 import { AssignmentCard } from '../molecules';
-import { DeleteAssignment, GetAssignmentPdfUrl, GetAllClasses, GetAllAssignments } from '../../services';
+import { DeleteAssignment, GetAssignmentPdfUrl, ResolveAssignmentFileUrl, GetAllClasses, GetAllAssignments } from '../../services';
 import { useAuth } from '../../context/AuthContext';
 import ManageSubmissons from './ManageSubmissons';
 import UploadOrEditAssignment from './UploadOrEditAssignment';
@@ -170,7 +170,10 @@ const AllAssignments = ({ onAssignmentClick }) => {
 
   const handleCardClick = async (assignment) => {
     try {
-      await openPdfInNewTab(() => GetAssignmentPdfUrl(assignment._id));
+      await openPdfInNewTab({
+        getImmediatePdfUrl: () => ResolveAssignmentFileUrl(assignment?.fileUrl || assignment?.file),
+        getPdfUrl: () => GetAssignmentPdfUrl(assignment._id),
+      });
 
       if (onAssignmentClick) {
         onAssignmentClick(assignment);
