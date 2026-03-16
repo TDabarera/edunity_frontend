@@ -30,7 +30,7 @@ const getResolvedPdfUrl = async ({ getImmediatePdfUrl, getPdfUrl }) => {
 
 export const openPdfInNewTab = async (config) => {
   const options = typeof config === 'function' ? { getPdfUrl: config } : (config || {});
-  const { fallbackToSameTabWhenBlocked = false } = options;
+  const { fallbackToSameTabWhenBlocked = true } = options;
 
   const pendingTab = window.open('', '_blank', 'noopener,noreferrer');
 
